@@ -1,6 +1,6 @@
 ﻿namespace MinimalChatApplication.Repositories
 {
-    public class Repository
+    public class LogRepository
     {
     }
 }
