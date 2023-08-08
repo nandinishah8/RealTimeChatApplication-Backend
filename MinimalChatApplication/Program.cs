@@ -1,8 +1,13 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using MinimalChatApplication.Data;
-using MinimalChatApplication.Middlewares;
+using MinimalChatApplication.Interfaces;
+//using MinimalChatApplication.Middlewares;
+using MinimalChatApplication.Models;
+using MinimalChatApplication.Repositories;
+using MinimalChatApplication.Services;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,7 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
-builder.Services.AddScoped<RequestLoggingMiddleware>();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(builder =>
@@ -23,9 +28,30 @@ builder.Services.AddCors(options =>
 
 
 
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+//builder.Services.AddScoped<IMessageService, MessageService>();
+//builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+
+//builder.Services.AddScoped<ILogService, LogService>();
+//builder.Services.AddScoped<ILogRepository, LogRepository>();
+
+
+
+//builder.Services.AddScoped<RequestLoggingMiddleware>();
+
+
+
+
 //configuring db path
 builder.Services.AddDbContext<MinimalChatContext>(options =>
 options.UseSqlServer(builder.Configuration.GetConnectionString("MinimalChatContext")));
+
+// Configure Identity
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+            .AddEntityFrameworkStores<MinimalChatContext>()
+            .AddDefaultTokenProviders();
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -42,9 +68,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 ValidateAudience = true,
                 ValidAudience = builder.Configuration["Jwt:Audience"],
                 ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))// Replace with your actual secret key
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
              };
     });
+
+
+
+
+
 
 
 
@@ -80,13 +111,13 @@ using (var scope = app.Services.CreateScope())
 
 
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
 app.UseAuthentication();
+app.UseRouting();
 app.UseCors();
 app.MapControllers();
 
-app.UseMiddleware<RequestLoggingMiddleware>();
+//app.UseMiddleware<RequestLoggingMiddleware>();
 
 
 app.Run();

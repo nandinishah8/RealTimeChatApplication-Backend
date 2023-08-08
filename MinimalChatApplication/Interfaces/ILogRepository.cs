@@ -1,6 +1,6 @@
 ﻿namespace MinimalChatApplication.Interfaces
 {
-    public class IRepository
+    public class ILogRepository
     {
     }
 }
