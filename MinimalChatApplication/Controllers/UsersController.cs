@@ -71,6 +71,17 @@ namespace MinimalChatApplication.Controllers
                 return Unauthorized(new { error = message });
             }
         }
+
+        [HttpPost("/api/SocialLogin")]
+
+        public async Task<IActionResult> SocialLogin(tokenRequest token)
+        {
+           
+            Console.WriteLine(token.TokenId);
+            var user = await _userService.VerifyGoogleTokenAsync(token.TokenId);
+
+            return Ok(user);
+        }
     }
 
 
@@ -94,25 +105,5 @@ namespace MinimalChatApplication.Controllers
     //}
 
 
-    //private string GenerateJwtToken(User user)
-    //{
-    //    var claims = new[]
-    //    {
-    //            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-    //            new Claim(ClaimTypes.Name, user.Name),
-    //            new Claim(ClaimTypes.Email, user.Email)
-    //        };
-
-    //    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your_secret_key_here"));
-    //    var signIn = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-    //    var token = new JwtSecurityToken(
-    //        issuer: "your_issuer_here",
-    //        audience: "your_audience_here",
-    //        claims: claims,
-    //        expires: DateTime.UtcNow.AddMinutes(10),
-    //        signingCredentials: signIn);
-
-    //    return new JwtSecurityTokenHandler().WriteToken(token);
-    //}
-
+    
 }

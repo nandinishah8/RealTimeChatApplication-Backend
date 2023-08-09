@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+using Microsoft.AspNetCore.Mvc;
 using MinimalChatApplication.Models;
 using Microsoft.AspNetCore.Identity;
 using NuGet.Protocol.Plugins;
@@ -14,6 +15,8 @@ namespace MinimalChatApplication.Interfaces
 
         Task<(bool success, string message, RegistrationDto userDto)> RegisterAsync(UserRegistration model);
         Task<(bool success, string message, LoginResponse response)> AuthenticateAsync(loginRequest loginData);
+
+        Task<LoginResponse> VerifyGoogleTokenAsync(string tokenId);
         //Task<IdentityUser> AuthenticateAsync(loginRequest loginData);
         //Task<IdentityUser> GetUserByIdAsync(string userId);
     }
