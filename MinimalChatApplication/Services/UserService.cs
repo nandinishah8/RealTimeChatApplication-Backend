@@ -115,7 +115,7 @@ namespace MinimalChatApplication.Services
                         {
                             userByEmail = new IdentityUser
                             {
-                                UserName = validPayload.FamilyName,
+                                UserName = validPayload.GivenName,
                                 Email = validPayload.Email,
                             };
 
