@@ -126,7 +126,7 @@ namespace MinimalChatApplication.Services
                 }
 
                 // Generate or retrieve the authentication token
-                var token = GenerateJwtToken(user); // Replace with your token generation logic
+                var token = GenerateJwtToken(user); 
 
                 var userProfile = new UserProfile
                 {
