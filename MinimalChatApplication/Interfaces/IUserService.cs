@@ -17,6 +17,8 @@ namespace MinimalChatApplication.Interfaces
         Task<(bool success, string message, LoginResponse response)> AuthenticateAsync(loginRequest loginData);
 
         Task<LoginResponse> VerifyGoogleTokenAsync(string tokenId);
+
+        Task<List<IdentityUser>> GetUserListAsync(string currentUserId);
         //Task<IdentityUser> AuthenticateAsync(loginRequest loginData);
         //Task<IdentityUser> GetUserByIdAsync(string userId);
     }

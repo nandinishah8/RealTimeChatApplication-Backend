@@ -25,12 +25,13 @@ namespace MinimalChatApplication.Services
         private readonly IUserRepository _userRepository;
         private readonly IConfiguration _configuration;
         private readonly UserManager<IdentityUser> _userManager;
-
-        public UserService(IUserRepository userRepository, UserManager<IdentityUser> userManager, IConfiguration configuration)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        public UserService(IUserRepository userRepository, UserManager<IdentityUser> userManager, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _userRepository = userRepository;
             _userManager = userManager;
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<(bool success, string message, RegistrationDto userDto)> RegisterAsync(UserRegistration model)
@@ -164,17 +165,14 @@ namespace MinimalChatApplication.Services
         }
 
 
-
-
-
         private string GenerateJwtToken(string id, string name, string email)
             {
                 var claims = new[]
                 {
-                     new Claim(ClaimTypes.NameIdentifier,id),
+                    new Claim(ClaimTypes.NameIdentifier,id),
                     new Claim(ClaimTypes.Name,name),
-                      new Claim(ClaimTypes.Email,email)
-                    // Add additional claims if needed
+                    new Claim(ClaimTypes.Email,email)
+                   
                  };
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
@@ -187,7 +185,22 @@ namespace MinimalChatApplication.Services
                     signingCredentials: signIn);
 
                 return new JwtSecurityTokenHandler().WriteToken(token);
-            }
+        }
+
+
+
+        public async Task<List<IdentityUser>> GetUserListAsync(string currentUserId)
+        {
+
+            var users = await _userManager.Users
+             .Where(u => u.Id != currentUserId)
+             .ToListAsync();
+
+            return users;
+        }
+
+
+
 
 
     }
