@@ -73,7 +73,7 @@ namespace MinimalChatApplication.Services
 
             if (user != null && await _userManager.CheckPasswordAsync(user, loginData.Password))
             {
-                var token = GenerateJwtToken(user);
+                var token = GenerateJwtToken(user.Id, user.UserName, user.Email);
                 var userProfile = new UserProfile
                 {
                     Id = user.Id,
@@ -101,68 +101,79 @@ namespace MinimalChatApplication.Services
                 Console.WriteLine("Validating Google Token...");
                 var validPayload = await GoogleJsonWebSignature.ValidateAsync(tokenId);
                 Console.WriteLine($"Valid Google Token. Email: {validPayload.Email}");
-                var user = await _userRepository.FindByEmailAsync(validPayload.Email);
+                var userByEmail = await _userManager.FindByEmailAsync(validPayload.Email);
 
-                if (user == null)
+                if (validPayload.EmailVerified)
                 {
-                    //Create a new IdentityUser if not found in the repository
-                    var newUser = new IdentityUser
-                    {
-                        UserName = validPayload.GivenName,
-                        Email = validPayload.Email
-                    };
-                    var result = await _userManager.CreateAsync(newUser);
+                    var user = await _userManager.FindByLoginAsync("Google", validPayload.Subject);
 
-                    if (!result.Succeeded)
+                    if (user == null)
                     {
-                        foreach (var error in result.Errors)
+                        user = await _userManager.FindByEmailAsync(validPayload.Email);
+
+                        if (userByEmail == null)
                         {
-                            Console.WriteLine($"Error creating user: {error.Description}");
+                            userByEmail = new IdentityUser
+                            {
+                                UserName = validPayload.FamilyName,
+                                Email = validPayload.Email,
+                            };
+
+
+                            var userLoginInfo = new UserLoginInfo("Goggle", validPayload.Subject, "Goggle");
+                            var result = await _userManager.CreateAsync(userByEmail);
+
+                            if (result.Succeeded)
+                            {
+                                await _userManager.AddLoginAsync(userByEmail, userLoginInfo);
+                            }
                         }
+                    }
+
+                    var users = user ?? userByEmail;
+
+                    if (users == null)
+                    {
                         return null;
                     }
 
-                    user = newUser;
+                    var generatedToken = GenerateJwtToken(user.Id, user.UserName, user.Email);
+
+                    var loginResponse = new LoginResponse
+                    {
+                        Token = generatedToken,
+                        Profile = new UserProfile
+                        {
+                            Id = users.Id,
+                            Name = users.UserName,
+                            Email = users.Email
+                        }
+                    };
+
+                    return loginResponse;
                 }
 
-                // Generate or retrieve the authentication token
-                var token = GenerateJwtToken(user); 
-
-                var userProfile = new UserProfile
-                {
-                    Id = user.Id,
-                    Name = user.UserName,
-                    Email = user.Email  
-                };
-
-                var loginResponse = new LoginResponse
-                {
-                    Token = token,
-                    Profile = userProfile
-                };
-
-                Console.WriteLine("Login response generated successfully.");
-                return loginResponse;
-            }
-            catch (InvalidJwtException)
-            {
-                // Token validation failed
-                Console.WriteLine("Token validation failed.");
                 return null;
+
+            }
+            catch (InvalidJwtException ex)
+            {
+                // The token is invalid. Handle the error.
+                throw new Exception("Invalid token: " + ex.Message);
             }
         }
-    
 
 
 
 
-            private string GenerateJwtToken(IdentityUser user)
+
+        private string GenerateJwtToken(string id, string name, string email)
             {
                 var claims = new[]
                 {
-                     new Claim(ClaimTypes.NameIdentifier, user.Id),
-                    new Claim(ClaimTypes.Name, user.UserName),
-                      new Claim(ClaimTypes.Email, user.Email)
+                     new Claim(ClaimTypes.NameIdentifier,id),
+                    new Claim(ClaimTypes.Name,name),
+                      new Claim(ClaimTypes.Email,email)
                     // Add additional claims if needed
                  };
 
