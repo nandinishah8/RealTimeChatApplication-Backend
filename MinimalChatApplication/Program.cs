@@ -111,13 +111,10 @@ using (var scope = app.Services.CreateScope())
 
 
 app.UseHttpsRedirection();
-app.UseAuthorization();
 app.UseAuthentication();
 app.UseRouting();
+app.UseAuthorization();
 app.UseCors();
 app.MapControllers();
-
 //app.UseMiddleware<RequestLoggingMiddleware>();
-
-
 app.Run();

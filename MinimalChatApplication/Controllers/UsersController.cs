@@ -1,11 +1,12 @@
 ﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using MinimalChatApplication.Data;
@@ -30,11 +31,13 @@ namespace MinimalChatApplication.Controllers
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
+        private readonly UserManager<IdentityUser> _userManager;
         //private readonly MinimalChatContext _context;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, UserManager<IdentityUser> userManager)
         {
             _userService = userService;
+            _userManager = userManager;
 
         }
 
@@ -82,28 +85,35 @@ namespace MinimalChatApplication.Controllers
 
             return Ok(user);
         }
+
+
+        [HttpGet]
+        //[Authorize]
+        public async Task<IActionResult> GetUserList()
+        {
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            await Console.Out.WriteLineAsync(currentUserId);
+
+            var users = await _userService.GetUserListAsync(currentUserId);
+
+            if (users == null)
+            {
+                return NotFound();
+            }
+
+            var userListResponse =  users.Select(u => new
+            {
+                id = u.Id,
+                name = u.UserName,
+                email = u.Email
+            }).ToList();
+
+            return Ok(userListResponse);
+        }
     }
-
-
-
-    //// GET: api/Users
-    //[HttpGet]
-    //[Authorize]
-    //public async Task<IActionResult> GetUserList()
-    //{
-    //    try
-    //    {
-    //        var currentUser = HttpContext.User;
-    //        var userId = int.Parse(currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-    //        var users = await _userService.GetUserList(userId);
-    //        return Ok(users);
-    //    }
-    //    catch
-    //    {
-    //        return StatusCode(StatusCodes.Status500InternalServerError, new { error = "An unexpected error occurred." });
-    //    }
-    //}
-
+  
+}
 
     
-}
+
