@@ -1,76 +1,50 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Security.Claims;
-//using System.Threading.Tasks;
-//using Microsoft.AspNetCore.Authorization;
-//using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.Mvc;
-//using Microsoft.EntityFrameworkCore;
-//using MinimalChatApplication.Data;
-//using MinimalChatApplication.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MinimalChatApplication.Data;
+using MinimalChatApplication.Interfaces;
+using MinimalChatApplication.Models;
 
-//namespace MinimalChatApplication.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [ApiController]
-//    [Authorize]
-//    public class MessagesController : ControllerBase
-//    {
-//        private readonly MinimalChatContext _context;
+namespace MinimalChatApplication.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
+    public class MessagesController : ControllerBase
+    {
+        private readonly IMessageService _messageService;
 
-//        public MessagesController(MinimalChatContext context)
-//        {
-//            _context = context;
-//        }
+        public MessagesController(IMessageService messageService)
+        {
+            _messageService = messageService;
+        }
 
-//        // GET: api/Messages
-//        [HttpGet("{id}")]
-//        public async Task<ActionResult> GetConversationHistory(int id)
-//        {
-//            Console.WriteLine("log"+id);
-//            var currentUser = HttpContext.User;
+        [HttpPost("/api/messages")]
+        public IActionResult SendMessage([FromBody] sendMessageRequest request)
+        {
+            var response = _messageService.SendMessage(request);
 
-//            var currentUserId = Convert.ToInt32(currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-//            Console.WriteLine("courrent"+currentUserId);
-//            if (currentUserId == id)
-//            {
-//                return BadRequest(new { error = "You cannot retrieve your own conversation history." });
-//            }
+            if (response.MessageId != -1)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(new { error = "Message sending failed." });
+            }
+        }
+    }
+}
 
-//            var conversation = _context.Messages
-//                .Where(m => (m.SenderId == currentUserId && m.ReceiverId == id) ||
-//                            (m.SenderId == id && m.ReceiverId == currentUserId));
-
-//            Console.WriteLine(conversation);
-             
-//            // Check if the conversation exists
-//            if (!conversation.Any())
-//            {
-//                return NotFound(new { error = "Conversation not found" });
-//            }
-
-          
-//            // Select only the required properties for the response and map to the DTO
-//            var messages = conversation.Select(m => new ConversationResponse
-//            {
-//                Id = m.Id,
-//                SenderId = m.SenderId,
-//                ReceiverId = m.ReceiverId,
-//                Content = m.Content,
-//                Timestamp = m.Timestamp
-//            });
-
-//            //.ToListAsync();
-
-//            return Ok(new ConversationHistoryResponseDto { Messages = messages });
-
-//        }
-
-        
 
 //        // PUT: api/Messages/5
-       
+
 //        [HttpPut("{messageId}")]
 //        public async Task<IActionResult> EditMessage(int messageId,  [FromBody] EditMessage editMessage)
 //        {
@@ -97,7 +71,7 @@
 //                return NotFound(new { error = "Message not found." });
 //            }
 
-   
+
 
 //            // Update the message content
 //            existingMessage.Content = editMessage.Content;
@@ -108,11 +82,11 @@
 
 //            // Return 200 OK with a success message
 //            return Ok(new { message = "Message edited successfully" });
-         
+
 //        }
 
 //        // POST: api/Messages
-        
+
 
 //        [HttpPost("/api/messages")]
 //        public async Task<ActionResult<sendMessageResponse>> sendMessages(sendMessageRequest request)

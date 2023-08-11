@@ -1,6 +1,9 @@
-﻿namespace MinimalChatApplication.Interfaces
+﻿using MinimalChatApplication.Models;
+
+namespace MinimalChatApplication.Interfaces
 {
-    public class IMessageService
+    public interface IMessageService
     {
+        sendMessageResponse SendMessage(sendMessageRequest request);
     }
 }
