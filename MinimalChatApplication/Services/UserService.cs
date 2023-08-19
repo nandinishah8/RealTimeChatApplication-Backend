@@ -169,7 +169,7 @@ namespace MinimalChatApplication.Services
             {
                 var claims = new[]
                 {
-                    new Claim(ClaimTypes.NameIdentifier,id),
+                    new Claim(ClaimTypes.NameIdentifier,id.ToString()),
                     new Claim(ClaimTypes.Name,name),
                     new Claim(ClaimTypes.Email,email)
                    

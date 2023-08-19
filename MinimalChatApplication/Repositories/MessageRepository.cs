@@ -35,7 +35,7 @@ namespace MinimalChatApplication.Repositories
 
         public async Task<List<Message>> GetMessageHistory(string result)
         {
-            return _context.Messages.Where(u => u.Content.Contains(result)).ToList();
+            return await  _context.Messages.Where(u => u.Content.Contains(result)).ToListAsync();
 
         }
 
@@ -59,7 +59,7 @@ namespace MinimalChatApplication.Repositories
 
     public async Task<Message> GetMessageById(int id)
         {
-            return  _context.Messages.FirstOrDefault(u => u.Id == id);
+            return await  _context.Messages.FirstOrDefaultAsync(u => u.Id == id);
         }
 
 

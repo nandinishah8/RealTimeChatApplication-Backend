@@ -76,9 +76,11 @@ namespace MinimalChatApplication.Controllers
 
             Console.WriteLine(request);
 
-            var userId = User.FindFirstValue("sub"); // Get user ID from claims
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var messages = await _messageService.GetConversationHistory(request, userId);
+            Console.WriteLine(userId);
+
+            List<Message> messages = await _messageService.GetConversationHistory(request, userId);
 
             if (messages == null)
             {
