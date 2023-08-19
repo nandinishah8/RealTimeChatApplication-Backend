@@ -5,10 +5,13 @@ using Microsoft.IdentityModel.Tokens;
 using MinimalChatApplication.Data;
 using MinimalChatApplication.Interfaces;
 //using MinimalChatApplication.Middlewares;
+using Microsoft.AspNetCore.Http.Connections;
 using MinimalChatApplication.Models;
 using MinimalChatApplication.Repositories;
 using MinimalChatApplication.Services;
 using System.Text;
+using MinimalChatApplication.Hubs;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,27 +19,35 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddCors(options =>
+builder.Services.AddSignalR();
+
+
+//builder.Services.AddSingleton(sp =>
+//{
+//    var redisConnection = ConnectionMultiplexer.Connect("localhost:6379");
+//    return redisConnection;
+//});
+
+builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
+builder =>
 {
-    options.AddDefaultPolicy(builder =>
-    {
-        builder.AllowAnyOrigin()
-               .AllowAnyMethod()
-               .AllowAnyHeader();
-    });
-});
+    builder.AllowAnyMethod().AllowAnyHeader()
+    .WithOrigins("http://localhost:4200")
+    .AllowCredentials();
+}));
 
 
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-//builder.Services.AddScoped<IMessageService, MessageService>();
-//builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 
 //builder.Services.AddScoped<ILogService, LogService>();
 //builder.Services.AddScoped<ILogRepository, LogRepository>();
 
+//builder.Services.AddScoped<IUserConnectionService, UserConnectionService>();
 
 
 //builder.Services.AddScoped<RequestLoggingMiddleware>();
@@ -56,21 +67,39 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>()
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // Add JWT authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//    .AddJwtBearer(options =>
+//    {
+
+//             options.RequireHttpsMetadata = false;
+//             options.SaveToken = true;
+//             options.TokenValidationParameters = new TokenValidationParameters()
+//             {
+//                ValidateIssuer = true,
+//                ValidateAudience = true,
+//                ValidAudience = builder.Configuration["Jwt:Audience"],
+//                ValidIssuer = builder.Configuration["Jwt:Issuer"],
+//                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+//             };
+//    });
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.RequireHttpsMetadata = false;
+    options.SaveToken = true;
+    options.TokenValidationParameters = new TokenValidationParameters()
     {
-         
-             options.RequireHttpsMetadata = false;
-             options.SaveToken = true;
-             options.TokenValidationParameters = new TokenValidationParameters()
-             {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidAudience = builder.Configuration["Jwt:Audience"],
-                ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-             };
-    });
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["Jwt:Audience"],
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+    };
+});
 
 
 
@@ -114,7 +143,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseRouting();
 app.UseAuthorization();
-app.UseCors();
+app.UseCors("CorsPolicy");
+app.MapHub<ChatHub>("/chatHub");
 app.MapControllers();
 //app.UseMiddleware<RequestLoggingMiddleware>();
 app.Run();
