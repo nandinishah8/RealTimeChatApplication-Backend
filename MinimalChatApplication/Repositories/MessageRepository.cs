@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using MinimalChatApplication.Data;
 using MinimalChatApplication.Interfaces;
 using MinimalChatApplication.Models;
@@ -9,38 +10,63 @@ namespace MinimalChatApplication.Repositories
 {
     public class MessageRepository : IMessageRepository
     {
-        private readonly MinimalChatContext _dbContext;
+        private readonly MinimalChatContext _context;
 
-        public MessageRepository(MinimalChatContext dbContext)
+        public MessageRepository(MinimalChatContext context)
         {
-            _dbContext = dbContext;
+            _context = context;
         }
-        public ActionResult SendMessage(int senderId, int receiverId, string content, out int messageId)
+
+        public async Task<Message> AddMessageAsync(Message message)
         {
-            
-            messageId = 0; // Initialize messageId
+            _context.Messages.Add(message);
+            await _context.SaveChangesAsync();
+            return message;
+        }
 
-            try
+
+
+        public async Task DeleteMessage(Message message)
+        {
+            _context.Remove(message);
+            await _context.SaveChangesAsync();
+        }
+
+
+        public async Task<List<Message>> GetMessageHistory(string result)
+        {
+            return _context.Messages.Where(u => u.Content.Contains(result)).ToList();
+
+        }
+
+        public async Task<List<Message>> GetMessages(string userId, string otherUserId, int count, DateTime? before)
+        {
+            var query = _context.Messages
+                .Where(m => (m.SenderId == userId && m.ReceiverId == otherUserId) || (m.SenderId == otherUserId && m.ReceiverId == userId));
+
+            if (before.HasValue)
             {
-                var message = new sendMessageResponse
-                {
-                    SenderId = senderId,
-                    ReceiverId = receiverId,
-                    Content = content,
-                    Timestamp = DateTime.UtcNow
-                };
-
-                _dbContext.Messages.Add(message);
-                _dbContext.SaveChanges();
-
-                messageId = message.MessageId; // Set the generated message ID
-               
+                query = query.Where(m => m.Timestamp < before);
             }
-            catch (Exception)
-            {
-                // Handle exceptions and logging as needed
-                return false;
-            }
+
+            var messages = await query.OrderByDescending(m => m.Timestamp)
+                                      .Take(count)
+                                      .ToListAsync();
+
+            return messages;
+        }
+    
+
+    public async Task<Message> GetMessageById(int id)
+        {
+            return  _context.Messages.FirstOrDefault(u => u.Id == id);
+        }
+
+
+        public async Task UpdateMessage(Message message)
+        {
+            _context.Messages.Update(message);
+            await _context.SaveChangesAsync();
         }
     }
 }

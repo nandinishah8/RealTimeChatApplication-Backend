@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MinimalChatApplication.Models;
 using System.Collections.Generic;
@@ -15,21 +16,29 @@ namespace MinimalChatApplication.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-        
-        modelBuilder.Entity<Message>().ToTable("Message");
-          modelBuilder.Entity<Logs>().ToTable("Log");
+
+            base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Message>().ToTable("Message");
+            modelBuilder.Entity<Logs>().ToTable("Log");
+
 
            modelBuilder.Entity<Message>()
                .HasOne(m => m.Receiver)
                .WithMany()
                .HasForeignKey(m => m.ReceiverId)
-               .OnDelete(DeleteBehavior.NoAction);
+               .OnDelete(DeleteBehavior.Restrict);
             //configure sender
             modelBuilder.Entity<Message>()
               .HasOne(m => m.Sender)
               .WithMany()
               .HasForeignKey(m => m.SenderId)
-              .OnDelete(DeleteBehavior.NoAction);
+              .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<IdentityUserLogin<string>>(entity =>
+            {
+                entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
+            });
         }
         
         public DbSet<Message> Messages { get; set; }
