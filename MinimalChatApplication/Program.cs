@@ -5,13 +5,11 @@ using Microsoft.IdentityModel.Tokens;
 using MinimalChatApplication.Data;
 using MinimalChatApplication.Interfaces;
 //using MinimalChatApplication.Middlewares;
-using Microsoft.AspNetCore.Http.Connections;
-using MinimalChatApplication.Models;
 using MinimalChatApplication.Repositories;
 using MinimalChatApplication.Services;
 using System.Text;
 using MinimalChatApplication.Hubs;
-using StackExchange.Redis;
+using MinimalChatApplication.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,8 +17,13 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
+//builder.Services.AddScoped<UserConnectionMap>();
 builder.Services.AddSignalR();
-
+//builder.Services.AddSignalR()
+//  .AddStackExchangeRedis("localhost:6379", options =>
+//  {
+//      options.Configuration.ChannelPrefix = "MyApp.ChatHub";
+//  });
 
 //builder.Services.AddSingleton(sp =>
 //{
@@ -49,7 +52,7 @@ builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 
 //builder.Services.AddScoped<IUserConnectionService, UserConnectionService>();
 
-
+builder.Services.AddScoped<Connection>();
 //builder.Services.AddScoped<RequestLoggingMiddleware>();
 
 

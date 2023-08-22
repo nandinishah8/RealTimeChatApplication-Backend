@@ -8,7 +8,7 @@ namespace MinimalChatApplication.Interfaces
         Task<Message> AddMessageAsync(Message message);
         Task<List<Message>> GetMessages(string userId, string otherUserId, int count, DateTime? before);
 
-        Task<Message> GetMessageById(int id);
+        Task<Message> GetMessageByIdAsync(int id);
 
         Task<List<Message>> GetMessageHistory(string result);
 

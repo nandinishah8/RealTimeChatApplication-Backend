@@ -33,10 +33,11 @@ namespace MinimalChatApplication.Controllers
 
 
 
+
         // POST: api/Messages
 
         [HttpPost]
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> PostMessage(sendMessageRequest message)
         {
             if (!ModelState.IsValid)
@@ -44,28 +45,32 @@ namespace MinimalChatApplication.Controllers
                 return BadRequest(new { message = "Message sending failed due to validation errors." });
             }
 
-            var senderId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _messageService.PostMessage(message, senderId);
-
-            if (result.Result is OkObjectResult okResult && okResult.Value is sendMessageResponse messageResponse)
+            var currentUser = HttpContext.User;
+            var userId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
             {
-                // Notify the sender and receiver using SignalR
-                await _hubContext.Clients.User(messageResponse.SenderId).SendAsync("ReceiveMessage", messageResponse);
-                await _hubContext.Clients.User(messageResponse.ReceiverId).SendAsync("ReceiveMessage", messageResponse);
-
-                return Ok(messageResponse);
-            }
-            else if (result.Result is BadRequestObjectResult badRequestResult)
-            {
-                return BadRequest(badRequestResult.Value);
+                return Unauthorized(new { message = "Unauthorized access." });
             }
 
-            return BadRequest(new { error = "An error occurred while sending the message." });
+            var messageResponse = await _messageService.SendMessageAsync(message, userId);
+
+            if (!string.IsNullOrEmpty(messageResponse.MessageId.ToString()))
+            {
+                return BadRequest();
+            }
+
+            // Notify the sender and receiver using SignalR
+            await _hubContext.Clients.User(messageResponse.SenderId).SendAsync("ReceiveMessage", messageResponse);
+            await _hubContext.Clients.User(messageResponse.ReceiverId).SendAsync("ReceiveMessage", messageResponse);
+
+            return Ok(messageResponse);
         }
 
+           
 
-        //GET: api/Message
-        [HttpGet]
+
+       //GET: api/Message
+       [HttpGet]
 
         public async Task<IActionResult> GetConversationHistory([FromQuery] ConversationRequest request)
         {

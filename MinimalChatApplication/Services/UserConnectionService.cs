@@ -1,7 +1,8 @@
 ﻿//using MinimalChatApplication.Interfaces;
 //using StackExchange.Redis;
 
-//namespace MinimalChatApplication.Services
+
+//namespace WebApplication1.Services
 //{
 //    public class UserConnectionService : IUserConnectionService
 //    {
@@ -21,5 +22,6 @@
 //        {
 //            return await _redisDb.StringGetAsync(userId);
 //        }
+
 //    }
 //}

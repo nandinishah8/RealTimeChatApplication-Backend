@@ -11,7 +11,7 @@ namespace MinimalChatApplication.Interfaces
 
         Task<List<Message>> GetMessageHistory(string result);
 
-        Task<ActionResult<sendMessageResponse>> PostMessage(sendMessageRequest model, string senderId);
+        Task<sendMessageResponse> SendMessageAsync(sendMessageRequest model, string senderId);
 
        
 
