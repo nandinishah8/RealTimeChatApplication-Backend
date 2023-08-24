@@ -28,7 +28,7 @@ namespace MinimalChatApplication.Services
 
         }
 
-        public async Task<sendMessageResponse> SendMessageAsync(sendMessageRequest model, string senderId)
+        public async Task<sendMessageResponse> PostMessage(sendMessageRequest model, string senderId)
         {
             var message = new Message
             {
@@ -70,14 +70,14 @@ namespace MinimalChatApplication.Services
 
 
 
-        public async Task<List<Message>> GetMessageHistory(string result)
-        {
-            var getHistory = await _messageRepository.GetMessageHistory(result);
+        //public async Task<List<Message>> GetMessageHistory(string result)
+        //{
+        //    var getHistory = await _messageRepository.GetMessageHistory(result);
 
-            return getHistory;
+        //    return getHistory;
 
 
-        }
+        //}
 
         public async Task<List<Message>> GetConversationHistory(ConversationRequest request, string userId)
         {

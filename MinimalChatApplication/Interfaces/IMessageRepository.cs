@@ -10,7 +10,7 @@ namespace MinimalChatApplication.Interfaces
 
         Task<Message> GetMessageByIdAsync(int id);
 
-        Task<List<Message>> GetMessageHistory(string result);
+        //Task<List<Message>> GetMessageHistory(string result);
 
         Task UpdateMessage(Message message);
 

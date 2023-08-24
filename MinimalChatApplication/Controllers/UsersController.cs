@@ -81,7 +81,7 @@ namespace MinimalChatApplication.Controllers
         {
            
             Console.WriteLine(token.TokenId);
-            var user = await _userService.VerifyGoogleTokenAsync(token.TokenId);
+            LoginResponse user = await _userService.VerifyGoogleTokenAsync(token.TokenId);
 
             return Ok(user);
         }

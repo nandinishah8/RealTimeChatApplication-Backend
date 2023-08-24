@@ -23,6 +23,7 @@ namespace MinimalChatApplication.Repositories
         public async Task<Message> AddMessageAsync(Message message)
         {
             _dbcontext.Messages.Add(message);
+            Console.WriteLine(message);
             await _dbcontext.SaveChangesAsync();
             return message;
         }
@@ -36,25 +37,44 @@ namespace MinimalChatApplication.Repositories
         }
 
 
-        public async Task<List<Message>> GetMessageHistory(string result)
-        {
-            return await _dbcontext.Messages.Where(u => u.Content.Contains(result)).ToListAsync();
+        //public async Task<List<Message>> GetMessageHistory(string result)
+        //{
+        //    return await _dbcontext.Messages.Where(u => u.Content.Contains(result)).ToListAsync();
 
-        }
+        //}
 
         public async Task<List<Message>> GetMessages(string userId, string otherUserId, int count, DateTime? before)
         {
-            var query = _dbcontext.Messages
-                .Where(m => (m.SenderId == userId && m.ReceiverId == otherUserId) || (m.SenderId == otherUserId && m.ReceiverId == userId));
+            //var query = _dbcontext.Messages
+            //    .Where(m => (m.SenderId == userId && m.ReceiverId == otherUserId) || (m.SenderId == otherUserId && m.ReceiverId == userId));
+
+            //if (before.HasValue)
+            //{
+            //    query = query.Where(m => m.Timestamp < before);
+            //}
+
+            //var messages = await query.OrderByDescending(m => m.Timestamp)
+            //                          .Take(count)
+            //                          .ToListAsync();
+
+            //return messages;
+            var sentMessages = _dbcontext.Messages
+        .Where(m => m.SenderId == userId && m.ReceiverId == otherUserId);
+
+            var receivedMessages = _dbcontext.Messages
+                .Where(m => m.SenderId == otherUserId && m.ReceiverId == userId);
+
+            var combinedMessages = sentMessages.Concat(receivedMessages);
 
             if (before.HasValue)
             {
-                query = query.Where(m => m.Timestamp < before);
+                combinedMessages = combinedMessages.Where(m => m.Timestamp < before);
             }
 
-            var messages = await query.OrderByDescending(m => m.Timestamp)
-                                      .Take(count)
-                                      .ToListAsync();
+            var messages = await combinedMessages
+                .OrderByDescending(m => m.Timestamp)
+                .Take(count)
+                .ToListAsync();
 
             return messages;
         }
