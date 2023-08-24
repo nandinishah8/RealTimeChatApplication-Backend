@@ -30,10 +30,6 @@ namespace MinimalChatApplication.Controllers
             _hubContext = hubContext;
         }
 
-
-
-
-
         // POST: api/Messages
 
         [HttpPost]
@@ -54,14 +50,14 @@ namespace MinimalChatApplication.Controllers
             sendMessageResponse messageResponse = await _messageService.PostMessage(message, userId);
             Console.WriteLine(userId);
 
-            if (!string.IsNullOrEmpty(messageResponse.MessageId.ToString()))
-            {
-                return BadRequest();
-            }
+            //if (!string.IsNullOrEmpty(messageResponse.MessageId.ToString()))
+            //{
+            //    return BadRequest();
+            //}
 
             // Notify the sender and receiver using SignalR
-            await _hubContext.Clients.User(messageResponse.SenderId).SendAsync("ReceiveMessage", messageResponse);
-            await _hubContext.Clients.User(messageResponse.ReceiverId).SendAsync("ReceiveMessage", messageResponse);
+            //await _hubContext.Clients.User(messageResponse.SenderId).SendAsync("ReceiveMessage", messageResponse);
+            //await _hubContext.Clients.User(messageResponse.ReceiverId).SendAsync("ReceiveMessage", messageResponse);
 
             return Ok(messageResponse);
         }
