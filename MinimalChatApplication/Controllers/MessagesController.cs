@@ -30,13 +30,9 @@ namespace MinimalChatApplication.Controllers
             _hubContext = hubContext;
         }
 
-
-
-
         // POST: api/Messages
 
         [HttpPost]
-        //[Authorize]
         public async Task<IActionResult> PostMessage(sendMessageRequest message)
         {
             if (!ModelState.IsValid)
@@ -44,28 +40,52 @@ namespace MinimalChatApplication.Controllers
                 return BadRequest(new { message = "Message sending failed due to validation errors." });
             }
 
-            var senderId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var result = await _messageService.PostMessage(message, senderId);
+            var currentUser = HttpContext.User;
+            var userId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            //if (string.IsNullOrEmpty(userId))
+            //{
+            //    return Unauthorized(new { message = "Unauthorized access." });
+            //}
 
-            if (result.Result is OkObjectResult okResult && okResult.Value is sendMessageResponse messageResponse)
-            {
-                // Notify the sender and receiver using SignalR
-                await _hubContext.Clients.User(messageResponse.SenderId).SendAsync("ReceiveMessage", messageResponse);
-                await _hubContext.Clients.User(messageResponse.ReceiverId).SendAsync("ReceiveMessage", messageResponse);
+            sendMessageResponse messageResponse = await _messageService.PostMessage(message, userId);
+            Console.WriteLine(userId);
 
-                return Ok(messageResponse);
-            }
-            else if (result.Result is BadRequestObjectResult badRequestResult)
-            {
-                return BadRequest(badRequestResult.Value);
-            }
+            //if (!string.IsNullOrEmpty(messageResponse.MessageId.ToString()))
+            //{
+            //    return BadRequest();
+            //}
 
-            return BadRequest(new { error = "An error occurred while sending the message." });
+            // Notify the sender and receiver using SignalR
+            //await _hubContext.Clients.User(messageResponse.SenderId).SendAsync("ReceiveMessage", messageResponse);
+            //await _hubContext.Clients.User(messageResponse.ReceiverId).SendAsync("ReceiveMessage", messageResponse);
+
+            return Ok(messageResponse);
         }
 
+            //    string senderId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            //    Console.WriteLine(senderId);
+            //    var result = await _messageService.PostMessage(message, senderId);
+            //    Console.WriteLine(result);
 
-        //GET: api/Message
-        [HttpGet]
+            //    if (result.Result is OkObjectResult okResult && okResult.Value is sendMessageResponse messageResponse)
+            //    {
+            //        // Notify the sender and receiver using SignalR
+            //        await _hubContext.Clients.User(messageResponse.SenderId).SendAsync("ReceiveMessage", messageResponse);
+            //        await _hubContext.Clients.User(messageResponse.ReceiverId).SendAsync("ReceiveMessage", messageResponse);
+
+            //        return Ok(messageResponse);
+            //    }
+            //    else if (result.Result is BadRequestObjectResult badRequestResult)
+            //    {
+            //        return BadRequest(badRequestResult.Value);
+            //    }
+
+            //    return BadRequest(new { error = "An error occurred while sending the message." });
+            //}
+
+
+            //GET: api/Message
+            [HttpGet]
 
         public async Task<IActionResult> GetConversationHistory([FromQuery] ConversationRequest request)
         {
@@ -75,8 +95,8 @@ namespace MinimalChatApplication.Controllers
             }
 
             Console.WriteLine(request);
-
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var currentUser = HttpContext.User;
+            string userId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             Console.WriteLine(userId);
 

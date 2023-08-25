@@ -6,23 +6,29 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
 using MinimalChatApplication.Hubs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 
 namespace MinimalChatApplication.Services
 {
     public class MessageService : IMessageService
     {
         private readonly IMessageRepository _messageRepository;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHubContext<ChatHub> _hubContext;
-       
+        private readonly Connection _userConnectionManager;
 
-        public MessageService(IMessageRepository messageRepository, IHubContext<ChatHub> hubContext)
+
+        public MessageService(IMessageRepository messageRepository, IHubContext<ChatHub> hubContext, Connection userConnectionManager, IHttpContextAccessor httpContextAccessor)
         {
             _messageRepository = messageRepository;
             _hubContext = hubContext;
-           
+            _httpContextAccessor = httpContextAccessor;
+            _userConnectionManager = userConnectionManager;
+
+
         }
 
-        public async Task<ActionResult<sendMessageResponse>> PostMessage(sendMessageRequest model, string senderId)
+        public async Task<sendMessageResponse> PostMessage(sendMessageRequest model, string senderId)
         {
             var message = new Message
             {
@@ -35,6 +41,14 @@ namespace MinimalChatApplication.Services
             try
             {
                 await _messageRepository.AddMessageAsync(message);
+                var receiverConnectionId = await _userConnectionManager.GetConnectionIdAsync(message.ReceiverId);
+                Console.WriteLine(receiverConnectionId);
+
+                if (!string.IsNullOrEmpty(receiverConnectionId))
+                {
+                    await _hubContext.Clients.All.SendAsync("ReceiveOne", message, senderId);
+                }
+
 
                 var response = new sendMessageResponse
                 {
@@ -45,28 +59,36 @@ namespace MinimalChatApplication.Services
                     Timestamp = message.Timestamp
                 };
 
-                return new OkObjectResult(response);
+                return response;
             }
             catch (Exception ex)
             {
-                return new BadRequestObjectResult(new { error = $"Message sending failed: {ex.Message}" });
+                return new sendMessageResponse();
             }
         }
+        
 
 
 
-        public async Task<List<Message>> GetMessageHistory(string result)
-        {
-            var getHistory = await _messageRepository.GetMessageHistory(result);
+        //public async Task<List<Message>> GetMessageHistory(string result)
+        //{
+        //    var getHistory = await _messageRepository.GetMessageHistory(result);
 
-            return getHistory;
+        //    return getHistory;
 
 
-        }
+        //}
 
         public async Task<List<Message>> GetConversationHistory(ConversationRequest request, string userId)
         {
             return await _messageRepository.GetMessages(userId, request.UserId, request.Count, request.Before);
+        }
+
+        private string GetCurrentUserId()
+        {
+            // Retrieve the user ID from the ClaimsPrincipal (User) available in the controller
+            var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            return userId;
         }
 
 

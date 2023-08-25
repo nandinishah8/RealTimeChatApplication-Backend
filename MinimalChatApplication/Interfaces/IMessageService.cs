@@ -9,11 +9,12 @@ namespace MinimalChatApplication.Interfaces
         Task<List<Message>> GetConversationHistory(ConversationRequest request, string userId);
 
 
-        Task<List<Message>> GetMessageHistory(string result);
+        //Task<List<Message>> GetMessageHistory(string result);
 
-        Task<ActionResult<sendMessageResponse>> PostMessage(sendMessageRequest model, string senderId);
+        Task<sendMessageResponse> PostMessage(sendMessageRequest model, string senderId);
+      //  Task<object> SendMessageAsync(sendMessageRequest message, string senderId);
 
-       
+
 
         //Task<IActionResult> PutMessage(int id, Message message);
 
