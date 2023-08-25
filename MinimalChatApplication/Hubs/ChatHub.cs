@@ -79,15 +79,17 @@ namespace MinimalChatApplication.Hubs
 
         public async Task SendMessage(ConversationResponse message, string senderId)
         {
+            var currentTime = DateTime.UtcNow;
+            //var timeInDesiredTimezone = TimeZoneInfo.ConvertTimeFromUtc(currentTime, desiredTimeZone);
             string userId = GetCurrentUserId();
             var receiverId = message.ReceiverId;
             Console.WriteLine($"ReceiverId: {receiverId}");
 
 
-            // var connectionIds = _userConnectionManager.GetConnectionIdAsync(message.ReceiverId);
+             var connectionId = await _userConnectionManager.GetConnectionIdAsync(message.ReceiverId);
             //var newmessageResponse = await _messageService.PostMessage(message, senderId);
-            // await Clients.Client(connectionId).SendAsync("ReceiveOne", newmessageResponse);
-            await Clients.All.SendAsync("ReceiveOne", message, senderId);
+            await Clients.Client(connectionId).SendAsync("ReceiveOne", message, senderId);
+            //await Clients.All.SendAsync("ReceiveOne", message, senderId);
             //await Clients.User(senderId).SendAsync("ReceiveOne", message, senderId);
             //await Clients.User(receiverId).SendAsync("ReceiveOne", message, senderId);
 
