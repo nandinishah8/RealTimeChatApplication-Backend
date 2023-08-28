@@ -126,19 +126,19 @@ namespace MinimalChatApplication.Controllers
 
 
 
-        //// PUT: api/Messages/5
+        // PUT: api/Messages/5
 
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> PutMessage(int id, Message message)
-        //{
-        //    if (!ModelState.IsValid)
-        //    {
-        //        return new BadRequestObjectResult(new { message = "message editing failed due to validation errors." });
-        //    }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutMessage(int id, EditMessage message)
+        {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(new { message = "message editing failed due to validation errors." });
+            }
 
-        //    return await _messageService.PutMessage(id, message);
+            return await _messageService.PutMessage(id, message);
 
-        //}
+        }
 
 
         //// DELETE: api/Message/5

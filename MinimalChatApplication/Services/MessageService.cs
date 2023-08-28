@@ -92,40 +92,40 @@ namespace MinimalChatApplication.Services
         }
 
 
-        //public async Task<IActionResult> PutMessage(int id, Message message)
-        //{
-        //    var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        public async Task<IActionResult> PutMessage(int id, EditMessage message)
+        {
+            var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        //    var messages = await _messageRepository.GetMessageById(id);
+            var messages = await _messageRepository.GetMessageByIdAsync(id);
 
-        //    if (messages == null)
-        //    {
-        //        return new NotFoundObjectResult(new { message = "message not found" });
-        //    }
+            if (messages == null)
+            {
+                return new NotFoundObjectResult(new { message = "message not found" });
+            }
 
-        //    if (userId != messages.SenderId)
-        //    {
-        //        return new UnauthorizedObjectResult(new { message = "Unauthorized access" });
-        //    }
+            if (userId != messages.SenderId)
+            {
+                return new UnauthorizedObjectResult(new { message = "Unauthorized access" });
+            }
 
-        //    messages.Content = message.Content;
-        //    await _messageRepository.UpdateMessage(messages);
+            messages.Content = message.Content;
+            await _messageRepository.UpdateMessage(id, message);
 
-        //    var senderConnectionId = await _userConnectionService.GetConnectionIdAsync(userId);
-        //    var receiverConnectionId = await _userConnectionService.GetConnectionIdAsync(messages.ReceiverId);
+            var senderConnectionId = await _userConnectionManager.GetConnectionIdAsync(userId);
+            var receiverConnectionId = await _userConnectionManager.GetConnectionIdAsync(messages.ReceiverId);
 
-        //    if (senderConnectionId != null)
-        //    {
-        //        await _hubContext.Clients.Client(senderConnectionId).SendAsync("ReceiveEdited", messages);
-        //    }
+            if (senderConnectionId != null)
+            {
+                await _hubContext.Clients.Client(senderConnectionId).SendAsync("ReceiveEdited", messages);
+            }
 
-        //    if (receiverConnectionId != null)
-        //    {
-        //        await _hubContext.Clients.Client(receiverConnectionId).SendAsync("ReceiveEdited", messages);
-        //    }
+            if (receiverConnectionId != null)
+            {
+                await _hubContext.Clients.Client(receiverConnectionId).SendAsync("ReceiveEdited", messages);
+            }
 
-        //    return new OkObjectResult(new { message = "Message edited successfully" });
-        //}
+            return new OkObjectResult(new { message = "Message edited successfully" });
+        }
 
         //public async Task<IActionResult> DeleteMessage(int id)
         //{

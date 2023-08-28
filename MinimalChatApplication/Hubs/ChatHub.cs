@@ -1,7 +1,9 @@
 ﻿using Azure.Messaging;
 using Microsoft.AspNetCore.SignalR;
 using MinimalChatApplication.Interfaces;
+using MinimalChatApplication.Migrations;
 using MinimalChatApplication.Models;
+using System;
 //using NuGet.Protocol.Plugins;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -80,20 +82,44 @@ namespace MinimalChatApplication.Hubs
         public async Task SendMessage(ConversationResponse message, string senderId)
         {
             var currentTime = DateTime.UtcNow;
-            //var timeInDesiredTimezone = TimeZoneInfo.ConvertTimeFromUtc(currentTime, desiredTimeZone);
             string userId = GetCurrentUserId();
             var receiverId = message.ReceiverId;
             Console.WriteLine($"ReceiverId: {receiverId}");
 
 
-             var connectionId = await _userConnectionManager.GetConnectionIdAsync(message.ReceiverId);
+            var connectionId = await _userConnectionManager.GetConnectionIdAsync(message.ReceiverId);
             //var newmessageResponse = await _messageService.PostMessage(message, senderId);
-            await Clients.Client(connectionId).SendAsync("ReceiveOne", message, senderId);
-            //await Clients.All.SendAsync("ReceiveOne", message, senderId);
+            // await Clients.Client(connectionId).SendAsync("ReceiveOne", message, senderId);
+            await Clients.All.SendAsync("ReceiveOne", message, senderId);
             //await Clients.User(senderId).SendAsync("ReceiveOne", message, senderId);
             //await Clients.User(receiverId).SendAsync("ReceiveOne", message, senderId);
 
         }
+
+
+      public async Task SendEditedMessage(EditMessage editMessage)
+    {
+            Console.WriteLine(editMessage);
+            Console.WriteLine("hiii");
+            //try
+            //{
+            //    var userId = GetCurrentUserId();
+            //    var ConnectionId = await _userConnectionManager.GetConnectionIdAsync(userId);
+
+            // if (ConnectionId != null)
+            // {
+
+            await Clients.All.SendAsync("ReceiveEdited", editMessage.Content);
+                Console.WriteLine(editMessage.Content);
+       // }
+    //}
+    //catch (Exception ex)
+    //{
+    //    Console.WriteLine($"Error sending edited message: {ex.Message}");
+    //    // Handle the exception as needed
+    //}
+        }
+
     }
 }
 

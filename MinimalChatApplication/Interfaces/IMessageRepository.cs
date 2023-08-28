@@ -12,7 +12,7 @@ namespace MinimalChatApplication.Interfaces
 
         //Task<List<Message>> GetMessageHistory(string result);
 
-        Task UpdateMessage(Message message);
+        Task UpdateMessage(int messageId, EditMessage editMessage);
 
         Task DeleteMessage(Message message);
 
