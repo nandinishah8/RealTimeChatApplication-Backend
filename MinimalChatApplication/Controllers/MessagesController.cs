@@ -112,12 +112,12 @@ namespace MinimalChatApplication.Controllers
         }
 
 
-        //// DELETE: api/Message/5
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteMessage(int id)
-        //{
-        //    return await _messageService.DeleteMessage(id);
-        //}
+        // DELETE: api/Message/5
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteMessage(int id)
+        {
+            return await _messageService.DeleteMessage(id);
+        }
 
 
         //[HttpGet("/api/messages/search/{result}")]

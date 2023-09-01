@@ -84,12 +84,18 @@ namespace MinimalChatApplication.Hubs
 
 
       public async Task SendEditedMessage(EditMessage editMessage)
-    {
+      {
            
 
             await Clients.All.SendAsync("ReceiveEdited", editMessage);
                 Console.WriteLine(editMessage.Content);
       
+      }
+
+
+        public async Task SendDeletedMessage(int messageId)
+        {
+            await Clients.All.SendAsync("ReceiveDeleted", messageId);
         }
 
     }
