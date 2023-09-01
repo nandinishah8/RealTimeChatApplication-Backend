@@ -42,46 +42,17 @@ namespace MinimalChatApplication.Controllers
 
             var currentUser = HttpContext.User;
             var userId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            //if (string.IsNullOrEmpty(userId))
-            //{
-            //    return Unauthorized(new { message = "Unauthorized access." });
-            //}
+           
 
             sendMessageResponse messageResponse = await _messageService.PostMessage(message, userId);
             Console.WriteLine(userId);
 
-            //if (!string.IsNullOrEmpty(messageResponse.MessageId.ToString()))
-            //{
-            //    return BadRequest();
-            //}
-
-            // Notify the sender and receiver using SignalR
-            //await _hubContext.Clients.User(messageResponse.SenderId).SendAsync("ReceiveMessage", messageResponse);
-            //await _hubContext.Clients.User(messageResponse.ReceiverId).SendAsync("ReceiveMessage", messageResponse);
+            
 
             return Ok(messageResponse);
         }
 
-            //    string senderId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            //    Console.WriteLine(senderId);
-            //    var result = await _messageService.PostMessage(message, senderId);
-            //    Console.WriteLine(result);
-
-            //    if (result.Result is OkObjectResult okResult && okResult.Value is sendMessageResponse messageResponse)
-            //    {
-            //        // Notify the sender and receiver using SignalR
-            //        await _hubContext.Clients.User(messageResponse.SenderId).SendAsync("ReceiveMessage", messageResponse);
-            //        await _hubContext.Clients.User(messageResponse.ReceiverId).SendAsync("ReceiveMessage", messageResponse);
-
-            //        return Ok(messageResponse);
-            //    }
-            //    else if (result.Result is BadRequestObjectResult badRequestResult)
-            //    {
-            //        return BadRequest(badRequestResult.Value);
-            //    }
-
-            //    return BadRequest(new { error = "An error occurred while sending the message." });
-            //}
+         
 
 
             //GET: api/Message

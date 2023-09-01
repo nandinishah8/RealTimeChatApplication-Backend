@@ -28,11 +28,7 @@ namespace MinimalChatApplication.Hubs
         }
 
 
-        //private string GetUserIdFromContext()
-        //{
-        //    var userId = Context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //    return userId;
-        //}
+       
 
         public override async Task OnConnectedAsync()
         {
@@ -69,15 +65,7 @@ namespace MinimalChatApplication.Hubs
         }
 
 
-        //public override async Task OnDisconnectedAsync(Exception exception)
-        //{
-        //    var userId = GetUserIdFromContext();
-        //    var connectionId = Context.ConnectionId;
-
-        //    _userConnectionMap.RemoveConnection(userId, connectionId);
-
-        //    await base.OnDisconnectedAsync(exception);
-        //}
+     
 
         public async Task SendMessage(ConversationResponse message, string senderId)
         {
@@ -88,36 +76,20 @@ namespace MinimalChatApplication.Hubs
 
 
             var connectionId = await _userConnectionManager.GetConnectionIdAsync(message.ReceiverId);
-            //var newmessageResponse = await _messageService.PostMessage(message, senderId);
-            // await Clients.Client(connectionId).SendAsync("ReceiveOne", message, senderId);
+           
             await Clients.All.SendAsync("ReceiveOne", message, senderId);
-            //await Clients.User(senderId).SendAsync("ReceiveOne", message, senderId);
-            //await Clients.User(receiverId).SendAsync("ReceiveOne", message, senderId);
+          
 
         }
 
 
       public async Task SendEditedMessage(EditMessage editMessage)
     {
-            Console.WriteLine(editMessage);
-            Console.WriteLine("hiii");
-            //try
-            //{
-            //    var userId = GetCurrentUserId();
-            //    var ConnectionId = await _userConnectionManager.GetConnectionIdAsync(userId);
+           
 
-            // if (ConnectionId != null)
-            // {
-
-            await Clients.All.SendAsync("ReceiveEdited", editMessage.Content);
+            await Clients.All.SendAsync("ReceiveEdited", editMessage);
                 Console.WriteLine(editMessage.Content);
-       // }
-    //}
-    //catch (Exception ex)
-    //{
-    //    Console.WriteLine($"Error sending edited message: {ex.Message}");
-    //    // Handle the exception as needed
-    //}
+      
         }
 
     }

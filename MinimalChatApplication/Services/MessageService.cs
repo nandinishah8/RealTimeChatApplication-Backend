@@ -38,6 +38,8 @@ namespace MinimalChatApplication.Services
                 Timestamp = DateTime.UtcNow
             };
 
+            message.Timestamp = DateTime.Now;
+
             try
             {
                 await _messageRepository.AddMessageAsync(message);
@@ -70,15 +72,7 @@ namespace MinimalChatApplication.Services
 
 
 
-        //public async Task<List<Message>> GetMessageHistory(string result)
-        //{
-        //    var getHistory = await _messageRepository.GetMessageHistory(result);
-
-        //    return getHistory;
-
-
-        //}
-
+      
         public async Task<List<Message>> GetConversationHistory(ConversationRequest request, string userId)
         {
             return await _messageRepository.GetMessages(userId, request.UserId, request.Count, request.Before);
