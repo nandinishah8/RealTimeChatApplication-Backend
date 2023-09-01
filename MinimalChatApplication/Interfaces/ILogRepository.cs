@@ -1,6 +1,8 @@
 ﻿namespace MinimalChatApplication.Interfaces
 {
-    public class ILogRepository
+    public interface ILogRepository
     {
+        Task<IEnumerable<object>> GetLogs(DateTime? customStartTime, DateTime? customEndTime);
+
     }
 }

@@ -10,6 +10,7 @@ using MinimalChatApplication.Services;
 using System.Text;
 using MinimalChatApplication.Hubs;
 using MinimalChatApplication.Models;
+using MinimalChatApplication.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,13 +48,14 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 
-//builder.Services.AddScoped<ILogService, LogService>();
-//builder.Services.AddScoped<ILogRepository, LogRepository>();
+builder.Services.AddScoped<ILogService, LogService>();
+builder.Services.AddScoped<ILogRepository, LogRepository>();
 
 //builder.Services.AddScoped<IUserConnectionService, UserConnectionService>();
 
 builder.Services.AddScoped<Connection>();
-//builder.Services.AddScoped<RequestLoggingMiddleware>();
+builder.Services.AddScoped<RequestLoggingMiddleware>();
+
 
 
 

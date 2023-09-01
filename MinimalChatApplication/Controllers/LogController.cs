@@ -1,67 +1,40 @@
-﻿//using System;
-//using System.Collections.Generic;
-//using System.Linq;
-//using System.Threading.Tasks;
-//using Microsoft.AspNetCore.Authorization;
-//using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.Mvc;
-//using Microsoft.EntityFrameworkCore;
-//using MinimalChatApplication.Data;
-//using MinimalChatApplication.Models;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MinimalChatApplication.Data;
+using MinimalChatApplication.Interfaces;
+using MinimalChatApplication.Models;
 
-//namespace MinimalChatApplication.Controllers
-//{
-//    [Route("api/[controller]")]
-//    [ApiController]
-//    [Authorize]
-    
-//    public class LogController : ControllerBase
-//    {
-//        private readonly MinimalChatContext _context;
+namespace MinimalChatApplication.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize]
 
-//        public LogController(MinimalChatContext context)
-//        {
-//            _context = context;
-//        }
+   public class LogController : ControllerBase
+    {
+        private readonly ILogService _logService;
+        public LogController(ILogService logService)
+        {
+            _logService = logService;
+        }
 
-//        // GET: api/Logs
-//        [HttpGet]
-//        public IActionResult GetLogs([FromQuery] DateTime? startTime = null, [FromQuery] DateTime? endTime = null)
-//        {
+        // GET: api/Log
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Logs>>> GetLogs(DateTime? startTime, DateTime? endTime)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { message = "Invalid request parameters" });
+            }
 
-//            var logsQuery = _context.Log.AsQueryable();
+            return await _logService.GetLogs(startTime, endTime);
 
-//            // Filter logs based on the provided start and end times, if any
-//            if (startTime != null)
-//            {
-//                logsQuery = logsQuery.Where(l => l.Timestamp >= startTime);
-//            }
-
-//            if (endTime != null)
-//            {
-//                logsQuery = logsQuery.Where(l => l.Timestamp <= endTime);
-//            }
-
-//            var logs = logsQuery.ToList();
-
-//            logs.ForEach(l =>
-//            {
-//                string cleanedString = l.RequestBody.Replace("\r\n", "").Replace(" ", "").Replace("\\", "");
-//                Console.WriteLine(cleanedString);
-//                l.RequestBody = cleanedString;
-//            });
-
-//            // If no logs found based on the provided filter, return 404 Not Found
-//            if (logs.Count == 0)
-//            {
-//                return NotFound(new { error = "No logs found." });
-//            }
-
-//            return Ok(new { Logs = logs });
-
-
-//        }
-
-
-//    }
-//}
+        }
+    }
+}

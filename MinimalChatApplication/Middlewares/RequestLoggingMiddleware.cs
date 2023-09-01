@@ -1,58 +1,56 @@
-﻿//using System.Security.Claims;
-//using System.Text;
-//using MinimalChatApplication.Data;
+﻿using System.Security.Claims;
+using System.Text;
+using MinimalChatApplication.Data;
 
-//namespace MinimalChatApplication.Middlewares
-//{
-//    public class RequestLoggingMiddleware : IMiddleware
-//    {
-//        private readonly ILogger<RequestLoggingMiddleware> _logger;
-//        private readonly MinimalChatContext _dbcontext;
+namespace MinimalChatApplication.Middlewares
+{
+    public class RequestLoggingMiddleware : IMiddleware
+    {
+        private readonly ILogger<RequestLoggingMiddleware> _logger;
+        private readonly MinimalChatContext _dbcontext;
 
-//        public RequestLoggingMiddleware(ILogger<RequestLoggingMiddleware> logger, MinimalChatContext dbcontext)
-//        {
-//            _logger = logger;
-//            _dbcontext = dbcontext;
-//        }
+        public RequestLoggingMiddleware(ILogger<RequestLoggingMiddleware> logger, MinimalChatContext dbcontext)
+        {
+            _logger = logger;
+            _dbcontext = dbcontext;
+        }
 
-//        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
-//        {
-//            var userName = context.User.FindFirst(ClaimTypes.Name)?.Value;
-//            //Console.WriteLine(context.User);
+        public async Task InvokeAsync(HttpContext context, RequestDelegate next)
+        {
+            var userName = context.User.FindFirst(ClaimTypes.Name)?.Value;
 
-//            string IP = context.Connection.RemoteIpAddress?.ToString();
-//            string RequestBody = await getRequestBodyAsync(context.Request);
-//            DateTime TimeStamp = DateTime.Now;
-//            string Username = userName;
+            string ip = context.Connection.RemoteIpAddress?.ToString();
+            string RequestBody = await getRequestBodyAsync(context.Request);
+            string TimeStamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            string UserName = userName;
 
-          
-//            string log = $"IP: {IP}, Username: {Username}, Timestamp: {TimeStamp}, Request Body: {RequestBody}";
 
-//            _logger.LogInformation(log);
+            string log = $"IP: {ip}, Username: {UserName}, Timestamp: {TimeStamp}, Request Body: {RequestBody}";
 
-//                _dbcontext.Log.Add(new Models.Logs
-//                {
-//                    IP = IP,
-//                    RequestBody = RequestBody,
-//                    Timestamp = TimeStamp,
-//                    Username = Username,
-//                });
+            _logger.LogInformation(log);
 
-//            await _dbcontext.SaveChangesAsync();
+            _dbcontext.Log.Add(new Models.Logs
+            {
+                IP = ip,
+                RequestBody = RequestBody,
+                Timestamp = Convert.ToDateTime(TimeStamp),
+                Username = UserName,
+            });
 
-//            await next(context);
-//        }
-//        public async Task<string> getRequestBodyAsync(HttpRequest req)
-//        {
-//            req.EnableBuffering();
+            await _dbcontext.SaveChangesAsync();
 
-//            using var reader = new StreamReader(req.Body, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true);
-//            string requestBody = await reader.ReadToEndAsync();
+            await next(context);
+        }
+        public async Task<string> getRequestBodyAsync(HttpRequest req)
+        {
+            req.EnableBuffering();
 
-//            req.Body.Position = 0;
+            using var reader = new StreamReader(req.Body, Encoding.UTF8, detectEncodingFromByteOrderMarks: false, leaveOpen: true);
+            string requestBody = await reader.ReadToEndAsync();
 
-//            return requestBody;
-//        }
-//    }
+            req.Body.Position = 0;
 
-// }
+            return requestBody;
+        }
+    }
+}
