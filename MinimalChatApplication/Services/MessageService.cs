@@ -121,39 +121,39 @@ namespace MinimalChatApplication.Services
             return new OkObjectResult(new { message = "Message edited successfully" });
         }
 
-        //public async Task<IActionResult> DeleteMessage(int id)
-        //{
-        //    var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        public async Task<IActionResult> DeleteMessage(int id)
+        {
+            var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-        //    var messages = await _messageRepository.GetMessageById(id);
+            var messages = await _messageRepository.GetMessageByIdAsync(id);
 
-        //    if (messages == null)
-        //    {
-        //        return new NotFoundObjectResult(new { message = "message not found" });
-        //    }
+            if (messages == null)
+            {
+                return new NotFoundObjectResult(new { message = "message not found" });
+            }
 
-        //    if (userId != messages.SenderId)
-        //    {
-        //        return new UnauthorizedObjectResult(new { message = "Unauthorized access" });
-        //    }
+            if (userId != messages.SenderId)
+            {
+                return new UnauthorizedObjectResult(new { message = "Unauthorized access" });
+            }
 
-        //    await _messageRepository.DeleteMessage(messages);
+            await _messageRepository.DeleteMessage(messages);
 
-        //    var senderConnectionId = await _userConnectionService.GetConnectionIdAsync(userId);
-        //    var receiverConnectionId = await _userConnectionService.GetConnectionIdAsync(messages.ReceiverId);
+            var senderConnectionId = await _userConnectionManager.GetConnectionIdAsync(userId);
+            var receiverConnectionId = await _userConnectionManager.GetConnectionIdAsync(messages.ReceiverId);
 
-        //    if (senderConnectionId != null)
-        //    {
-        //        await _hubContext.Clients.Client(senderConnectionId).SendAsync("ReceiveDeleted", messages);
-        //    }
+            if (senderConnectionId != null)
+            {
+                await _hubContext.Clients.Client(senderConnectionId).SendAsync("ReceiveDeleted", messages);
+            }
 
-        //    if (receiverConnectionId != null)
-        //    {
-        //        await _hubContext.Clients.Client(receiverConnectionId).SendAsync("ReceiveDeleted", messages);
-        //    }
+            if (receiverConnectionId != null)
+            {
+                await _hubContext.Clients.Client(receiverConnectionId).SendAsync("ReceiveDeleted", messages);
+            }
 
-        //    return new OkObjectResult(new { message = "Message deleted successfully" });
-        //}
+            return new OkObjectResult(new { message = "Message deleted successfully" });
+        }
 
 
 

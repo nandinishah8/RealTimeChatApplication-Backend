@@ -17,7 +17,7 @@ namespace MinimalChatApplication.Interfaces
 
         Task<IActionResult> PutMessage(int id, EditMessage message);
 
-        //Task<IActionResult> DeleteMessage(int id);
+        Task<IActionResult> DeleteMessage(int id);
 
     }
 }
