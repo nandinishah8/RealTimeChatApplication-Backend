@@ -155,7 +155,14 @@ namespace MinimalChatApplication.Services
             return new OkObjectResult(new { message = "Message deleted successfully" });
         }
 
+        public async Task<List<Message>> GetMessageHistory(string result)
+        {
+            var getHistory = await _messageRepository.GetMessageHistory(result);
 
+            return getHistory;
+
+
+        }
 
     }
 }

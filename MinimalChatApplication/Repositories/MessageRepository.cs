@@ -84,5 +84,11 @@ namespace MinimalChatApplication.Repositories
 
             await _dbcontext.SaveChangesAsync();
         }
+
+        public async Task<List<Message>> GetMessageHistory(string result)
+        {
+            return await _dbcontext.Messages.Where(u => u.Content.Contains(result)).ToListAsync();
+
+        }
     }
 }
