@@ -13,14 +13,14 @@ namespace MinimalChatApplication.Services
         }
         public async Task<ActionResult<IEnumerable<Logs>>> GetLogs(DateTime? startTime, DateTime? endTime)
         {
-            var loggs = await _logRepository.GetLogs(startTime, endTime);
+            var logs = await _logRepository.GetLogs(startTime, endTime);
 
-            if (loggs == null)
+            if (logs == null)
             {
                 return new NotFoundObjectResult(new { message = "Logs not found" });
             }
 
-            return new OkObjectResult(loggs);
+            return new OkObjectResult(logs);
         }
     }
 }

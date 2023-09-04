@@ -19,22 +19,22 @@ namespace MinimalChatApplication.Middlewares
         {
             var userName = context.User.FindFirst(ClaimTypes.Name)?.Value;
 
-            string ip = context.Connection.RemoteIpAddress?.ToString();
+            string IP = context.Connection.RemoteIpAddress?.ToString();
             string RequestBody = await getRequestBodyAsync(context.Request);
             string TimeStamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-            string UserName = userName;
+            string Username = userName;
 
 
-            string log = $"IP: {ip}, Username: {UserName}, Timestamp: {TimeStamp}, Request Body: {RequestBody}";
+            string log = $"IP: {IP}, Username: {Username}, Timestamp: {TimeStamp}, Request Body: {RequestBody}";
 
             _logger.LogInformation(log);
 
             _dbcontext.Log.Add(new Models.Logs
             {
-                IP = ip,
+                IP = IP,
                 RequestBody = RequestBody,
                 Timestamp = Convert.ToDateTime(TimeStamp),
-                Username = UserName,
+                Username = Username,
             });
 
             await _dbcontext.SaveChangesAsync();

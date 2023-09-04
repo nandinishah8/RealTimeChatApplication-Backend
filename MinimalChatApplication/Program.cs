@@ -151,5 +151,5 @@ app.UseAuthorization();
 app.UseCors("CorsPolicy");
 app.MapHub<ChatHub>("/chatHub");
 app.MapControllers();
-//app.UseMiddleware<RequestLoggingMiddleware>();
+app.UseMiddleware<RequestLoggingMiddleware>();
 app.Run();
