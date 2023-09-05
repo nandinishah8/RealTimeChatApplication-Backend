@@ -90,5 +90,59 @@ namespace MinimalChatApplication.Repositories
             return await _dbcontext.Messages.Where(u => u.Content.Contains(result)).ToListAsync();
 
         }
+        //public bool MarkMessageAsSeen(int messageId, string userId)
+        //{
+        //    Message message = _dbcontext.Messages.FirstOrDefault(m => m.Id == messageId);
+
+        //    if (message != null)
+        //    {
+        //        if (message.ReceiverId == userId)
+        //        {
+        //            message.Seen = true;
+        //            message.SeenTimestamp = DateTime.UtcNow; // Optionally, update seen timestamp
+        //            message.SeenByUserId = userId; // Optionally, record who marked as seen
+        //            _dbcontext.SaveChanges();
+        //            return true;
+        //        }
+        //    }
+
+        //    return false;
+        //}
+
+        public bool MarkMessageAsSeen(int messageId, string userId)
+        {
+            Message message = _dbcontext.Messages.FirstOrDefault(m => m.Id == messageId);
+
+            if (message != null)
+            {
+                if (message.ReceiverId == userId)
+                {
+                    message.Seen = true;
+                    message.SeenTimestamp = DateTime.UtcNow; // Optionally, update seen timestamp
+                    message.SeenByUserId = userId; // Optionally, record who marked as seen
+                    _dbcontext.SaveChanges();
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+
+        public Dictionary<string, int> GetReadUnreadMessageCounts(string userId)
+        {
+            var readUnreadCounts = new Dictionary<string, int>();
+
+            // Calculate and retrieve read/unread message counts
+            int unreadCount = _dbcontext.Messages.Count(m => m.ReceiverId == userId && !m.Seen);
+            int readCount = _dbcontext.Messages.Count(m => m.ReceiverId == userId && m.Seen);
+
+            readUnreadCounts.Add("unreadCount", unreadCount);
+            readUnreadCounts.Add("readCount", readCount);
+
+            return readUnreadCounts;
+        }
+
     }
 }
+

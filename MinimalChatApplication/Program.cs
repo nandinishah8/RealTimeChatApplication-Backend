@@ -56,6 +56,9 @@ builder.Services.AddScoped<ILogRepository, LogRepository>();
 builder.Services.AddScoped<Connection>();
 builder.Services.AddScoped<RequestLoggingMiddleware>();
 
+builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+
 
 
 

@@ -18,7 +18,7 @@ namespace MinimalChatApplication.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class MessagesController : ControllerBase
     {
         private readonly IMessageService _messageService;
@@ -42,21 +42,21 @@ namespace MinimalChatApplication.Controllers
 
             var currentUser = HttpContext.User;
             var userId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-           
+
 
             sendMessageResponse messageResponse = await _messageService.PostMessage(message, userId);
             Console.WriteLine(userId);
 
-            
+
 
             return Ok(messageResponse);
         }
 
-         
 
 
-            //GET: api/Message
-            [HttpGet]
+
+        //GET: api/Message
+        [HttpGet]
 
         public async Task<IActionResult> GetConversationHistory([FromQuery] ConversationRequest request)
         {
@@ -141,8 +141,45 @@ namespace MinimalChatApplication.Controllers
             }));
         }
 
+        [HttpPost("mark-seen")]
+        public IActionResult MarkMessageAsSeen([FromBody] MarkMessageAsSeenDto request)
+        {
+            if (string.IsNullOrWhiteSpace(request.UserId) || request.MessageId == 0) // Assuming messageId is an int
+            {
+                return BadRequest(new { message = "Invalid request data." });
+            }
+
+            bool markedAsSeen = _messageService.MarkMessageAsSeen(request.MessageId, request.UserId);
+
+            if (!markedAsSeen)
+            {
+                return NotFound(new { message = "Message not found or cannot be marked as seen." });
+            }
+
+            return Ok(new { message = "Message marked as seen successfully." });
+        }
+
+
+        [HttpGet("read-unread-counts/{userId}")]
+        public IActionResult GetReadUnreadMessageCounts(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return BadRequest(new { message = "Invalid user ID." });
+            }
+
+            Dictionary<string, int> readUnreadCounts = _messageService.GetReadUnreadMessageCounts(userId);
+
+            if (readUnreadCounts == null)
+            {
+                return NotFound(new { message = "User not found or counts could not be retrieved." });
+            }
+
+            return Ok(readUnreadCounts);
+        }
     }
 }
+
 
 
 
