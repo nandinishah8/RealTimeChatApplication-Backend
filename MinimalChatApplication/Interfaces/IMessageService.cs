@@ -16,7 +16,7 @@ namespace MinimalChatApplication.Interfaces
 
         Task<IActionResult> DeleteMessage(int id);
 
-        bool MarkMessageAsSeen(int messageId, string userId);
+        bool MarkMessageAsSeen(string currentUserId, string receiverId);
         Dictionary<string, int> GetReadUnreadMessageCounts(string userId);
 
     }

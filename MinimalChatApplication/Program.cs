@@ -18,19 +18,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
-//builder.Services.AddScoped<UserConnectionMap>();
-builder.Services.AddSignalR();
-//builder.Services.AddSignalR()
-//  .AddStackExchangeRedis("localhost:6379", options =>
-//  {
-//      options.Configuration.ChannelPrefix = "MyApp.ChatHub";
-//  });
 
-//builder.Services.AddSingleton(sp =>
-//{
-//    var redisConnection = ConnectionMultiplexer.Connect("localhost:6379");
-//    return redisConnection;
-//});
+builder.Services.AddSignalR();
 
 builder.Services.AddCors(options => options.AddPolicy("CorsPolicy",
 builder =>
@@ -51,7 +40,7 @@ builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<ILogService, LogService>();
 builder.Services.AddScoped<ILogRepository, LogRepository>();
 
-//builder.Services.AddScoped<IUserConnectionService, UserConnectionService>();
+
 
 builder.Services.AddScoped<Connection>();
 builder.Services.AddScoped<RequestLoggingMiddleware>();
@@ -142,7 +131,7 @@ using (var scope = app.Services.CreateScope())
 
     var context = services.GetRequiredService<MinimalChatContext>();
     context.Database.EnsureCreated();
-    // DbInitializer.Initialize(context);
+    
 }
 
 

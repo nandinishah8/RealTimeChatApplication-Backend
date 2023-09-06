@@ -164,10 +164,10 @@ namespace MinimalChatApplication.Services
 
         }
 
-        public bool MarkMessageAsSeen(int messageId, string userId)
+        public bool MarkMessageAsSeen(string currentUserId, string receiverId)
         {
             // Implement the logic to mark a message as seen
-            return _messageRepository.MarkMessageAsSeen(messageId, userId);
+            return _messageRepository.MarkMessagesAsSeen(currentUserId, receiverId);
         }
 
         public Dictionary<string, int> GetReadUnreadMessageCounts(string userId)

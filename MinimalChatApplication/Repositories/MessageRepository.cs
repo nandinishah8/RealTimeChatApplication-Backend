@@ -90,6 +90,8 @@ namespace MinimalChatApplication.Repositories
             return await _dbcontext.Messages.Where(u => u.Content.Contains(result)).ToListAsync();
 
         }
+
+
         //public bool MarkMessageAsSeen(int messageId, string userId)
         //{
         //    Message message = _dbcontext.Messages.FirstOrDefault(m => m.Id == messageId);
@@ -99,34 +101,43 @@ namespace MinimalChatApplication.Repositories
         //        if (message.ReceiverId == userId)
         //        {
         //            message.Seen = true;
-        //            message.SeenTimestamp = DateTime.UtcNow; // Optionally, update seen timestamp
-        //            message.SeenByUserId = userId; // Optionally, record who marked as seen
+        //            message.SeenTimestamp = DateTime.Now; 
+        //            message.SeenByUserId = userId; 
         //            _dbcontext.SaveChanges();
         //            return true;
         //        }
+
+
         //    }
 
         //    return false;
         //}
-
-        public bool MarkMessageAsSeen(int messageId, string userId)
+        public bool MarkMessagesAsSeen(string currentUserId, string receiverId)
         {
-            Message message = _dbcontext.Messages.FirstOrDefault(m => m.Id == messageId);
+            // Fetch all messages between the current user and the receiver ID
+            var messages = _dbcontext.Messages
+                .Where(m => (m.SenderId == currentUserId && m.ReceiverId == receiverId) ||
+                            (m.SenderId == receiverId && m.ReceiverId == currentUserId))
+                .ToList();
 
-            if (message != null)
+            foreach (var message in messages)
             {
-                if (message.ReceiverId == userId)
+                // Check if the message is not already marked as seen
+                if (!message.Seen)
                 {
+                    // Update the message as seen
                     message.Seen = true;
-                    message.SeenTimestamp = DateTime.UtcNow; // Optionally, update seen timestamp
-                    message.SeenByUserId = userId; // Optionally, record who marked as seen
-                    _dbcontext.SaveChanges();
-                    return true;
+                    message.SeenTimestamp = DateTime.Now;
+                    message.SeenByUserId = currentUserId;
                 }
             }
 
-            return false;
+            // Save changes to the database
+            _dbcontext.SaveChanges();
+
+            return true;
         }
+
 
 
         public Dictionary<string, int> GetReadUnreadMessageCounts(string userId)
@@ -135,10 +146,10 @@ namespace MinimalChatApplication.Repositories
 
             // Calculate and retrieve read/unread message counts
             int unreadCount = _dbcontext.Messages.Count(m => m.ReceiverId == userId && !m.Seen);
-            int readCount = _dbcontext.Messages.Count(m => m.ReceiverId == userId && m.Seen);
+           
 
             readUnreadCounts.Add("unreadCount", unreadCount);
-            readUnreadCounts.Add("readCount", readCount);
+           
 
             return readUnreadCounts;
         }
