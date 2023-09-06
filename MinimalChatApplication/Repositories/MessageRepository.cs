@@ -90,5 +90,70 @@ namespace MinimalChatApplication.Repositories
             return await _dbcontext.Messages.Where(u => u.Content.Contains(result)).ToListAsync();
 
         }
+
+
+        //public bool MarkMessageAsSeen(int messageId, string userId)
+        //{
+        //    Message message = _dbcontext.Messages.FirstOrDefault(m => m.Id == messageId);
+
+        //    if (message != null)
+        //    {
+        //        if (message.ReceiverId == userId)
+        //        {
+        //            message.Seen = true;
+        //            message.SeenTimestamp = DateTime.Now; 
+        //            message.SeenByUserId = userId; 
+        //            _dbcontext.SaveChanges();
+        //            return true;
+        //        }
+
+
+        //    }
+
+        //    return false;
+        //}
+        public bool MarkMessagesAsSeen(string currentUserId, string receiverId)
+        {
+            // Fetch all messages between the current user and the receiver ID
+            var messages = _dbcontext.Messages
+                .Where(m => (m.SenderId == currentUserId && m.ReceiverId == receiverId) ||
+                            (m.SenderId == receiverId && m.ReceiverId == currentUserId))
+                .ToList();
+
+            foreach (var message in messages)
+            {
+                // Check if the message is not already marked as seen
+                if (!message.Seen)
+                {
+                    // Update the message as seen
+                    message.Seen = true;
+                    message.SeenTimestamp = DateTime.Now;
+                    message.SeenByUserId = currentUserId;
+                }
+            }
+
+            // Save changes to the database
+            _dbcontext.SaveChanges();
+
+            return true;
+        }
+
+
+
+        public Dictionary<string, int> GetReadUnreadMessageCounts(string userId)
+        {
+            var readUnreadCounts = new Dictionary<string, int>();
+
+            // Calculate and retrieve read/unread message counts
+            int unreadCount = _dbcontext.Messages.Count(m => m.ReceiverId == userId && !m.Seen);
+           
+
+            readUnreadCounts.Add("unreadCount", unreadCount);
+           
+
+            return readUnreadCounts;
+        }
+
     }
 }
+
