@@ -18,6 +18,7 @@ namespace MinimalChatApplication.Models
         public DateTime Timestamp { get; set; }
 
         public bool Seen { get; set; }
+        public bool IsRead { get; set; }
 
         // Navigation properties
         public IdentityUser Sender { get; set; }

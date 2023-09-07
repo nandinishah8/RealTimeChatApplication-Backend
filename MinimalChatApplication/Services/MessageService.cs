@@ -170,10 +170,13 @@ namespace MinimalChatApplication.Services
             return _messageRepository.MarkMessagesAsSeen(currentUserId, receiverId);
         }
 
-        public Dictionary<string, int> GetReadUnreadMessageCounts(string userId)
+        public async Task<int> GetUnreadMessageCount(string userId)
         {
-            // Implement the logic to retrieve read/unread message counts
-            return _messageRepository.GetReadUnreadMessageCounts(userId);
+            // Make sure you are awaiting the task here
+            int unreadCount = await _messageRepository.GetUnreadMessageCount(userId);
+
+            // Rest of your code...
+            return unreadCount;
         }
 
     }

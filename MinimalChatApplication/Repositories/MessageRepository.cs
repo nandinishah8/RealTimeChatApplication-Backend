@@ -140,18 +140,14 @@ namespace MinimalChatApplication.Repositories
 
 
 
-        public Dictionary<string, int> GetReadUnreadMessageCounts(string userId)
+        public async Task<int> GetUnreadMessageCount(string userId)
         {
-            var readUnreadCounts = new Dictionary<string, int>();
+            // Assuming you have a DbSet<Message> in your DbContext named "Messages"
+            var unreadCount = await _dbcontext.Messages
+                .Where(m => m.ReceiverId == userId && !m.IsRead) 
+                .CountAsync();
 
-            // Calculate and retrieve read/unread message counts
-            int unreadCount = _dbcontext.Messages.Count(m => m.ReceiverId == userId && !m.Seen);
-           
-
-            readUnreadCounts.Add("unreadCount", unreadCount);
-           
-
-            return readUnreadCounts;
+            return unreadCount;
         }
 
     }

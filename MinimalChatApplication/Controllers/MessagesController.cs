@@ -12,6 +12,7 @@ using MinimalChatApplication.Data;
 using MinimalChatApplication.Hubs;
 using MinimalChatApplication.Interfaces;
 using MinimalChatApplication.Models;
+using MinimalChatApplication.Repositories;
 using MinimalChatApplication.Services;
 
 namespace MinimalChatApplication.Controllers
@@ -180,21 +181,18 @@ namespace MinimalChatApplication.Controllers
 
 
         [HttpGet("read-unread-counts/{userId}")]
-        public IActionResult GetReadUnreadMessageCounts(string userId)
+        public async Task<IActionResult> GetUnreadMessageCount(string userId)
         {
             if (string.IsNullOrWhiteSpace(userId))
             {
                 return BadRequest(new { message = "Invalid user ID." });
             }
 
-            Dictionary<string, int> readUnreadCounts = _messageService.GetReadUnreadMessageCounts(userId);
+            int unreadCount = await _messageService.GetUnreadMessageCount(userId);
 
-            if (readUnreadCounts == null)
-            {
-                return NotFound(new { message = "User not found or counts could not be retrieved." });
-            }
 
-            return Ok(readUnreadCounts);
+
+            return Ok(unreadCount);
         }
     }
 }

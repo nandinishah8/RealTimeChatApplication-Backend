@@ -15,7 +15,7 @@ namespace MinimalChatApplication.Interfaces
         //Task MarkMessageAsSeenAsync(Guid messageId, string userId);
 
         bool MarkMessagesAsSeen(string currentUserId, string receiverId);
-        Dictionary<string, int> GetReadUnreadMessageCounts(string userId);
+        Task<int> GetUnreadMessageCount(string userId);
 
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Azure.Messaging;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using MinimalChatApplication.Interfaces;
 using MinimalChatApplication.Migrations;
 using MinimalChatApplication.Models;
@@ -15,6 +16,7 @@ namespace MinimalChatApplication.Hubs
         private readonly Connection _userConnectionManager;
         private readonly IMessageService _messageService;
         private Dictionary<string, string> userConnectionMap = new Dictionary<string, string>();
+        private readonly Dictionary<string, int> unreadMessageCounts = new Dictionary<string, int>();
         private readonly IHttpContextAccessor _httpContextAccessor;
         public IHubContext<ChatHub> HubContext { get; }
 
@@ -26,9 +28,6 @@ namespace MinimalChatApplication.Hubs
             HubContext = hubContext;
             _userConnectionManager = userConnectionManager;
         }
-
-
-       
 
         public override async Task OnConnectedAsync()
         {
@@ -64,9 +63,6 @@ namespace MinimalChatApplication.Hubs
             return await _userConnectionManager.GetConnectionIdAsync(userId);
         }
 
-
-     
-
         public async Task SendMessage(ConversationResponse message, string senderId)
         {
             var currentTime = DateTime.UtcNow;
@@ -76,12 +72,30 @@ namespace MinimalChatApplication.Hubs
 
 
             var connectionId = await _userConnectionManager.GetConnectionIdAsync(message.ReceiverId);
-           
+
             await Clients.All.SendAsync("ReceiveOne", message, senderId);
-          
 
+
+
+
+            int unreadMessageCount = await _messageService.GetUnreadMessageCount(receiverId);
+            await Clients.Client(connectionId).SendAsync("UnreadMessageCount", userId, unreadMessageCount);
+
+
+            _ = MarkMessagesAsSeen(receiverId, userId);
+            // Update unread message count for the recipient
+            if (!unreadMessageCounts.ContainsKey(receiverId))
+            {
+                unreadMessageCounts[receiverId] = 1;
+            }
+            else
+            {
+                unreadMessageCounts[receiverId]++;
+            }
+
+            // Send the updated unread message count to the recipient
+            await Clients.User(receiverId).SendAsync("UpdateUnreadMessageCount", unreadMessageCounts[receiverId]);
         }
-
 
       public async Task SendEditedMessage(EditMessage editMessage)
       {
@@ -97,6 +111,26 @@ namespace MinimalChatApplication.Hubs
         {
             await Clients.All.SendAsync("ReceiveDeleted", messageId);
         }
+
+
+        //public async Task MarkMessagesAsSeen(string userId, string receiverId)
+        //{
+        //    // Fetch all messages for the user that are marked as unread
+        //    var unreadMessageCount = await _messageService.MarkMessageAsSeen(receiverId);
+
+        //    // Send the updated unread message count to the user
+        //    await Clients.Caller.SendAsync("UnreadMessageCount", userId, unreadMessageCount);
+        //}
+
+        public async Task MarkMessagesAsSeen(string receiverId, string currentUserId)
+        {
+
+            // Calculate unread message count for the recipient and send it
+            int unreadMessageCount = await _messageService.GetUnreadMessageCount(currentUserId);
+            await Clients.Caller.SendAsync("UnreadMessageCount", currentUserId, unreadMessageCount);
+        }
+
+
 
     }
 }
