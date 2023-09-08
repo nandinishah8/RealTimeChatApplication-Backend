@@ -141,23 +141,6 @@ namespace MinimalChatApplication.Controllers
             }));
         }
 
-        //[HttpPost("mark-seen")]
-        //public IActionResult MarkMessageAsSeen([FromBody] MarkMessageAsSeenDto request)
-        //{
-        //    if (string.IsNullOrWhiteSpace(request.UserId) || request.MessageId == 0) 
-        //    {
-        //        return BadRequest(new { message = "Invalid request data." });
-        //    }
-
-        //    bool markedAsSeen = _messageService.MarkMessageAsSeen(request.MessageId, request.UserId);
-
-        //    if (!markedAsSeen)
-        //    {
-        //        return NotFound(new { message = "Message not found or cannot be marked as seen." });
-        //    }
-
-        //    return Ok(new { message = "Message marked as seen successfully." });
-        //}
 
         [HttpPost("mark-seen")]
         public IActionResult MarkMessagesAsSeen([FromBody] MarkMessageAsSeenDto request)

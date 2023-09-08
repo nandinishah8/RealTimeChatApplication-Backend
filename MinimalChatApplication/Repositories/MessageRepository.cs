@@ -92,26 +92,7 @@ namespace MinimalChatApplication.Repositories
         }
 
 
-        //public bool MarkMessageAsSeen(int messageId, string userId)
-        //{
-        //    Message message = _dbcontext.Messages.FirstOrDefault(m => m.Id == messageId);
-
-        //    if (message != null)
-        //    {
-        //        if (message.ReceiverId == userId)
-        //        {
-        //            message.Seen = true;
-        //            message.SeenTimestamp = DateTime.Now; 
-        //            message.SeenByUserId = userId; 
-        //            _dbcontext.SaveChanges();
-        //            return true;
-        //        }
-
-
-        //    }
-
-        //    return false;
-        //}
+       
         public bool MarkMessagesAsSeen(string currentUserId, string receiverId)
         {
             // Fetch all messages between the current user and the receiver ID
