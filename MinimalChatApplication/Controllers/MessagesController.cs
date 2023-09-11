@@ -162,7 +162,7 @@ namespace MinimalChatApplication.Controllers
 
 
 
-        [HttpGet("read-unread-counts/{userId}")]
+        [HttpGet("unread-counts/{userId}")]
         public IActionResult GetReadUnreadMessageCounts(string userId)
         {
             if (string.IsNullOrWhiteSpace(userId))

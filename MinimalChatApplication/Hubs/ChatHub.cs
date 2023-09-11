@@ -16,6 +16,7 @@ namespace MinimalChatApplication.Hubs
         private readonly IMessageService _messageService;
         private Dictionary<string, string> userConnectionMap = new Dictionary<string, string>();
         private readonly IHttpContextAccessor _httpContextAccessor;
+        int unreadMessageCount = 0;
         public IHubContext<ChatHub> HubContext { get; }
 
         public ChatHub(IMessageService messageService, IHttpContextAccessor httpContextAccessor, IHubContext<ChatHub> hubContext, Connection userConnectionManager)
@@ -73,12 +74,15 @@ namespace MinimalChatApplication.Hubs
             string userId = GetCurrentUserId();
             var receiverId = message.ReceiverId;
             Console.WriteLine($"ReceiverId: {receiverId}");
+            unreadMessageCount++;
 
 
             var connectionId = await _userConnectionManager.GetConnectionIdAsync(message.ReceiverId);
            
             await Clients.All.SendAsync("ReceiveOne", message, senderId);
-          
+            await Clients.All.SendAsync("UpdateUnreadCount", unreadMessageCount);
+            Console.WriteLine(unreadMessageCount);
+
 
         }
 
@@ -96,6 +100,13 @@ namespace MinimalChatApplication.Hubs
         public async Task SendDeletedMessage(int messageId)
         {
             await Clients.All.SendAsync("ReceiveDeleted", messageId);
+        }
+
+
+        public async Task MarkMessageAsSeen(string messageId)
+        {
+            
+            await Clients.All.SendAsync("messageSeen", messageId);
         }
 
     }
