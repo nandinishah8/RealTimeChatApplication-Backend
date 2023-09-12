@@ -103,10 +103,10 @@ namespace MinimalChatApplication.Hubs
         }
 
 
-        public async Task MarkMessageAsSeen(string messageId)
+        public async Task MarkMessageAsSeen(string senderConnectionId)
         {
             
-            await Clients.All.SendAsync("messageSeen", messageId);
+            await Clients.All.SendAsync("messageSeen", senderConnectionId);
         }
 
     }
