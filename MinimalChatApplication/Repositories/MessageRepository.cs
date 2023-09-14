@@ -128,7 +128,8 @@ namespace MinimalChatApplication.Repositories
         {
             message.Seen = true;
             message.SeenTimestamp = DateTime.Now;
-           
+            _dbcontext.SaveChanges();
+
 
         }
 

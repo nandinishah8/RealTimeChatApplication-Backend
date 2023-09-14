@@ -12,13 +12,13 @@ namespace MinimalChatApplication.Interfaces
         Task UpdateMessage(int messageId, EditMessage editMessage);
         Task DeleteMessage(Message message);
 
-        //Task MarkMessageAsSeenAsync(Guid messageId, string userId);
+        
         IEnumerable<Message> GetUnreadMessages(string receiverId);
         void MarkMessageAsRead(Message message);
 
         void SaveChanges();
 
-        //  bool MarkMessagesAsSeen(string currentUserId, string receiverId);
+        
         Dictionary<string, int> GetReadUnreadMessageCounts(string userId);
 
     }

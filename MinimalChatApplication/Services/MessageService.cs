@@ -165,11 +165,7 @@ namespace MinimalChatApplication.Services
 
         }
 
-        //public bool MarkMessageAsSeen(string currentUserId, string receiverId)
-        //{
-        //    // Implement the logic to mark a message as seen
-        //    return _messageRepository.MarkMessagesAsSeen(currentUserId, receiverId);
-        //}
+        
 
 
         public void MarkAllMessagesAsRead(string receiverId)
