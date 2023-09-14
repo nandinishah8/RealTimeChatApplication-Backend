@@ -142,22 +142,37 @@ namespace MinimalChatApplication.Controllers
         }
 
 
-        [HttpPost("mark-seen")]
-        public IActionResult MarkMessagesAsSeen([FromBody] MarkMessageAsSeenDto request)
+        //[HttpPost("mark-seen")]
+        //public IActionResult MarkMessagesAsSeen([FromBody] MarkMessageAsSeenDto request)
+        //{
+        //    if (string.IsNullOrWhiteSpace(request.CurrentUserId) || string.IsNullOrWhiteSpace(request.ReceiverId))
+        //    {
+        //        return BadRequest(new { message = "Invalid request data." });
+        //    }
+
+        //    bool markedAsSeen = _messageService.MarkMessageAsSeen(request.CurrentUserId, request.ReceiverId);
+
+        //    if (!markedAsSeen)
+        //    {
+        //        return NotFound(new { message = "Messages not found or cannot be marked as seen." });
+        //    }
+
+        //    return Ok(new { message = "Messages marked as seen successfully." });
+        //}
+
+        [HttpPost("mark-all-as-read/{receiverId}")]
+        public IActionResult MarkAllMessagesAsRead(string receiverId)
         {
-            if (string.IsNullOrWhiteSpace(request.CurrentUserId) || string.IsNullOrWhiteSpace(request.ReceiverId))
+            try
             {
-                return BadRequest(new { message = "Invalid request data." });
+                _messageService.MarkAllMessagesAsRead(receiverId);
+                return Ok("All messages marked as read.");
             }
-
-            bool markedAsSeen = _messageService.MarkMessageAsSeen(request.CurrentUserId, request.ReceiverId);
-
-            if (!markedAsSeen)
+            catch (Exception ex)
             {
-                return NotFound(new { message = "Messages not found or cannot be marked as seen." });
+                // Handle exceptions, e.g., log the error and return an error response
+                return StatusCode(500, "An error occurred while marking messages as read.");
             }
-
-            return Ok(new { message = "Messages marked as seen successfully." });
         }
 
 

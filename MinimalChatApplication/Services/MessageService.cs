@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 using MinimalChatApplication.Hubs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace MinimalChatApplication.Services
 {
@@ -164,10 +165,23 @@ namespace MinimalChatApplication.Services
 
         }
 
-        public bool MarkMessageAsSeen(string currentUserId, string receiverId)
+        //public bool MarkMessageAsSeen(string currentUserId, string receiverId)
+        //{
+        //    // Implement the logic to mark a message as seen
+        //    return _messageRepository.MarkMessagesAsSeen(currentUserId, receiverId);
+        //}
+
+
+        public void MarkAllMessagesAsRead(string receiverId)
         {
-            // Implement the logic to mark a message as seen
-            return _messageRepository.MarkMessagesAsSeen(currentUserId, receiverId);
+            var unreadMessages = _messageRepository.GetUnreadMessages(receiverId);
+
+            foreach (var message in unreadMessages)
+            {
+                _messageRepository.MarkMessageAsRead(message);
+            }
+
+            _messageRepository.SaveChanges(); // Save changes to the database
         }
 
         public Dictionary<string, int> GetReadUnreadMessageCounts(string userId)

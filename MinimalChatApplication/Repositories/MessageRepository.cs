@@ -92,33 +92,50 @@ namespace MinimalChatApplication.Repositories
         }
 
 
-       
-        public bool MarkMessagesAsSeen(string currentUserId, string receiverId)
+
+        //public bool MarkMessagesAsSeen(string currentUserId, string receiverId)
+        //{
+        //    // Fetch all messages between the current user and the receiver ID
+        //    var messages = _dbcontext.Messages
+        //        .Where(m => (m.SenderId == currentUserId && m.ReceiverId == receiverId) ||
+        //                    (m.SenderId == receiverId && m.ReceiverId == currentUserId))
+        //        .ToList();
+
+        //    foreach (var message in messages)
+        //    {
+        //        // Check if the message is not already marked as seen
+        //        if (!message.Seen)
+        //        {
+        //            // Update the message as seen
+        //            message.Seen = true;
+        //            message.SeenTimestamp = DateTime.Now;
+        //            message.SeenByUserId = currentUserId;
+        //        }
+        //    }
+
+        //    // Save changes to the database
+        //    _dbcontext.SaveChanges();
+
+        //    return true;
+        //}
+        public IEnumerable<Message> GetUnreadMessages(string receiverId)
         {
-            // Fetch all messages between the current user and the receiver ID
-            var messages = _dbcontext.Messages
-                .Where(m => (m.SenderId == currentUserId && m.ReceiverId == receiverId) ||
-                            (m.SenderId == receiverId && m.ReceiverId == currentUserId))
-                .ToList();
-
-            foreach (var message in messages)
-            {
-                // Check if the message is not already marked as seen
-                if (!message.Seen)
-                {
-                    // Update the message as seen
-                    message.Seen = true;
-                    message.SeenTimestamp = DateTime.Now;
-                    message.SeenByUserId = currentUserId;
-                }
-            }
-
-            // Save changes to the database
-            _dbcontext.SaveChanges();
-
-            return true;
+            return _dbcontext.Messages
+                .Where(m => m.ReceiverId == receiverId && !m.Seen);
         }
 
+        public void MarkMessageAsRead(Message message)
+        {
+            message.Seen = true;
+            message.SeenTimestamp = DateTime.Now;
+           
+
+        }
+
+        public void SaveChanges()
+        {
+            _dbcontext.SaveChanges();
+        }
 
 
         public Dictionary<string, int> GetReadUnreadMessageCounts(string userId)

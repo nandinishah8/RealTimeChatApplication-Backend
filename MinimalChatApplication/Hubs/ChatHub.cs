@@ -1,5 +1,6 @@
 ﻿using Azure.Messaging;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 using MinimalChatApplication.Interfaces;
 using MinimalChatApplication.Migrations;
 using MinimalChatApplication.Models;
@@ -103,11 +104,18 @@ namespace MinimalChatApplication.Hubs
         }
 
 
-        public async Task MarkMessageAsSeen(string senderConnectionId)
+        //public async Task MarkMessageAsSeen(string senderConnectionId)
+        //{
+            
+        //    await Clients.All.SendAsync("messageSeen", senderConnectionId);
+        //}
+
+        public async Task MarkAllMessagesAsRead(string receiverId)
         {
             
-            await Clients.All.SendAsync("messageSeen", senderConnectionId);
+            await Clients.All.SendAsync("AllMessagesRead", receiverId);
         }
+
 
     }
 }

@@ -23,6 +23,5 @@ namespace MinimalChatApplication.Models
         public IdentityUser Sender { get; set; }
         public IdentityUser Receiver { get; set; }
         public DateTime SeenTimestamp { get;  set; }
-        public string SeenByUserId { get;  set; }
     }
 }
