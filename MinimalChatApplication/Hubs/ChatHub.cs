@@ -80,8 +80,8 @@ namespace MinimalChatApplication.Hubs
 
             var connectionId = await _userConnectionManager.GetConnectionIdAsync(message.ReceiverId);
            
-            await Clients.All.SendAsync("ReceiveOne", message, senderId);
-            await Clients.All.SendAsync("UpdateUnreadCount", unreadMessageCount);
+            await Clients.All.SendAsync("ReceiveOne", message, senderId, unreadMessageCount);
+            //await Clients.Caller.SendAsync("UpdateUnreadCount", unreadMessageCount);
             Console.WriteLine(unreadMessageCount);
 
 
@@ -109,8 +109,11 @@ namespace MinimalChatApplication.Hubs
         public async Task MarkAllMessagesAsRead(string receiverId)
         {
             
-            await Clients.All.SendAsync("AllMessagesRead", receiverId);
+           // await Clients.All.SendAsync("AllMessagesRead", receiverId);
+            await Clients.User(receiverId).SendAsync("AllMessagesRead");
         }
+
+     
 
 
     }
