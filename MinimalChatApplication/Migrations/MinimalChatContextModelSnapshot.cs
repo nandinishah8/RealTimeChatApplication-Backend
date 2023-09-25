@@ -253,6 +253,9 @@ namespace MinimalChatApplication.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ChannelId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
@@ -261,9 +264,6 @@ namespace MinimalChatApplication.Migrations
 
                     b.Property<bool>("Seen")
                         .HasColumnType("bit");
-
-                    b.Property<string>("SeenByUserId")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("SeenTimestamp")
                         .HasColumnType("datetime2");

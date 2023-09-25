@@ -21,6 +21,8 @@ namespace MinimalChatApplication.Data
 
             modelBuilder.Entity<Message>().ToTable("Message");
             modelBuilder.Entity<Logs>().ToTable("Log");
+            modelBuilder.Entity<Channels>().ToTable("Channels");
+            modelBuilder.Entity<ChannelMember>().ToTable("ChannelMember");
 
 
            modelBuilder.Entity<Message>()
@@ -39,10 +41,17 @@ namespace MinimalChatApplication.Data
             {
                 entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
             });
+
+            modelBuilder.Entity<ChannelMember>()
+              .HasKey(cm => new { cm.UserId, cm.ChannelId });
         }
         
         public DbSet<Message> Messages { get; set; }
         public DbSet<Logs> Log { get; set; }
+
+        public DbSet<Channels> Channels { get; set; }
+
+        public DbSet<ChannelMember> ChannelMembers { get; set; }
 
 
     }
