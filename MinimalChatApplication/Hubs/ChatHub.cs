@@ -17,6 +17,8 @@ namespace MinimalChatApplication.Hubs
         private readonly IMessageService _messageService;
         private Dictionary<string, string> userConnectionMap = new Dictionary<string, string>();
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly Dictionary<string, int> unreadMessageCounts = new Dictionary<string, int>();
+
         int unreadMessageCount = 0;
         public IHubContext<ChatHub> HubContext { get; }
 
@@ -80,8 +82,8 @@ namespace MinimalChatApplication.Hubs
 
             var connectionId = await _userConnectionManager.GetConnectionIdAsync(message.ReceiverId);
            
-            await Clients.All.SendAsync("ReceiveOne", message, senderId);
-            await Clients.All.SendAsync("UpdateUnreadCount", unreadMessageCount);
+            await Clients.All.SendAsync("ReceiveOne", message, senderId, unreadMessageCount);
+            //await Clients.Caller.SendAsync("UpdateUnreadCount", unreadMessageCount);
             Console.WriteLine(unreadMessageCount);
 
 
@@ -109,8 +111,25 @@ namespace MinimalChatApplication.Hubs
         public async Task MarkAllMessagesAsRead(string receiverId)
         {
             
-            await Clients.All.SendAsync("AllMessagesRead", receiverId);
+           // await Clients.All.SendAsync("AllMessagesRead", receiverId);
+            await Clients.User(receiverId).SendAsync("AllMessagesRead");
         }
+
+        public async Task SendInitialUnreadMessageCount(string userId)
+        {
+            if (unreadMessageCounts.TryGetValue(userId, out var count))
+            {
+                await Clients.User(userId).SendAsync("UpdateUnreadMessageCount", count);
+            }
+        }
+
+        // Method to send the updated unread message count to a user
+        public async Task SendUpdatedUnreadMessageCount(string userId, int count)
+        {
+            unreadMessageCounts[userId] = count;
+            await Clients.User(userId).SendAsync("UpdateUnreadMessageCount", count);
+        }
+
 
 
     }
