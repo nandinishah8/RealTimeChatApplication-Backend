@@ -19,7 +19,7 @@ namespace MinimalChatApplication.Repositories
 
         public async Task<Channels> CreateChannelAsync(Channels channel)
         {
-            //channel creation logic using the EF context or your data access method
+           
             _context.Channel.Add(channel);
             await _context.SaveChangesAsync();
             return channel;
@@ -36,7 +36,7 @@ namespace MinimalChatApplication.Repositories
 
         public async Task<Channels> GetChannelAsync(int channelId)
         {
-            // logic to retrieve a channel from the database
+            
             return await _context.Channel.FindAsync(channelId);
         }
     }
