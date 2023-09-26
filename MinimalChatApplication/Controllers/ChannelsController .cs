@@ -64,22 +64,22 @@ namespace MinimalChatApplication.Controllers
             }
         }
 
-        //[HttpPost("addMembers")]
-        //public async Task<IActionResult> AddMembersToChannel(AddMembersRequest addMembersRequest)
-        //{
-        //    try
-        //    {
-        //        var result = await _channelService.AddMembersToChannelAsync(addMembersRequest.ChannelId, addMembersRequest.UserIds);
-        //        if (result)
-        //        {
-        //            return Ok(new { message = "Members added to the channel successfully" });
-        //        }
-        //        return BadRequest("Failed to add members to the channel");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(new { message = ex.Message });
-        //    }
-        //}
+        [HttpPost("addMembers")]
+        public async Task<IActionResult> AddMembersToChannel(AddMembersRequest addMembersRequest)
+        {
+            try
+            {
+                var result = await _channelService.AddMembersToChannelAsync(addMembersRequest.ChannelId, addMembersRequest.UserIds);
+                if (result)
+                {
+                    return Ok(new { message = "Members added to the channel successfully" });
+                }
+                return BadRequest("Failed to add members to the channel");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace MinimalChatApplication.Interfaces
     public interface IChannelService
     {
         Task<Channels> CreateChannelAsync(Channels channel);
-        //Task<bool> AddMembersToChannelAsync(int channelId, List<string> memberIds);
+        Task<bool> AddMembersToChannelAsync(int channelId, List<string> memberIds);
         Task<Channels> GetChannelAsync(int channelId);
     }
 }
