@@ -49,8 +49,8 @@ namespace MinimalChatApplication.Repositories
                     .Join(_context.Users, cm => cm.UserId, u => u.Id, (cm, u) => new UserProfile
                     {
                         Id = u.Id,
-                        Name = u.UserName, // Replace with your actual property
-                        Email = u.Email // Replace with your actual property
+                        Name = u.UserName, 
+                        Email = u.Email 
                     })
                     .ToListAsync();
 
@@ -58,7 +58,7 @@ namespace MinimalChatApplication.Repositories
             }
             catch (Exception ex)
             {
-                // Handle exceptions and log errors
+                
                 throw new Exception("Failed to retrieve member profiles in the channel from the database.", ex);
             }
         }

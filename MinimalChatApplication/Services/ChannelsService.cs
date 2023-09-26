@@ -61,7 +61,7 @@
             }
             catch (Exception ex)
             {
-                // Handle exceptions and log errors
+                
                 throw new Exception("Failed to retrieve members in the channel.", ex);
             }
         }

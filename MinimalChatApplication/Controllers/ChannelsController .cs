@@ -92,7 +92,7 @@ namespace MinimalChatApplication.Controllers
             }
             catch (Exception ex)
             {
-                // Handle exceptions, e.g., log the error and return an error response
+               
                 return StatusCode(500, "An error occurred while retrieving members in the channel.");
             }
         }

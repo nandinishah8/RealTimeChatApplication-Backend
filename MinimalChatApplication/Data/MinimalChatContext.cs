@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MinimalChatApplication.Models;
 using System.Collections.Generic;
-
 namespace MinimalChatApplication.Data
 {
     
