@@ -40,6 +40,9 @@ builder.Services.AddScoped<IMessageRepository, MessageRepository>();
 builder.Services.AddScoped<ILogService, LogService>();
 builder.Services.AddScoped<ILogRepository, LogRepository>();
 
+builder.Services.AddScoped<IChannelService, ChannelsService>();
+builder.Services.AddScoped<IChannelRepository, ChannelRepository>();
+
 
 
 builder.Services.AddScoped<Connection>();
