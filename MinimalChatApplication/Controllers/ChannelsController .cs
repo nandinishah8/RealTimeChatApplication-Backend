@@ -81,5 +81,21 @@ namespace MinimalChatApplication.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpGet("members/{channelId}")]
+        public async Task<IActionResult> GetMembersInChannel(int channelId)
+        {
+            try
+            {
+                var members = await _channelService.GetMembersInChannelAsync(channelId);
+                return Ok(members);
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions, e.g., log the error and return an error response
+                return StatusCode(500, "An error occurred while retrieving members in the channel.");
+            }
+        }
     }
 }
+

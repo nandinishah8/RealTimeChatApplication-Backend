@@ -53,5 +53,18 @@
             }
         }
 
+        public async Task<List<UserProfile>> GetMembersInChannelAsync(int channelId)
+        {
+            try
+            {
+                return await _channelsRepository.GetMembersInChannelAsync(channelId);
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions and log errors
+                throw new Exception("Failed to retrieve members in the channel.", ex);
+            }
+        }
+
     }
 }
