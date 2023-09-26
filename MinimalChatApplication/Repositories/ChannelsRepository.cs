@@ -32,10 +32,10 @@ namespace MinimalChatApplication.Repositories
         //    return true; // Return true if the operation is successful
         //}
 
-        //public async Task<Channel> GetChannelAsync(int channelId)
-        //{
-        //    // Implement logic to retrieve a channel from the database
-        //    return await _context.Channels.FindAsync(channelId);
-        //}
+        public async Task<Channels> GetChannelAsync(int channelId)
+        {
+            // logic to retrieve a channel from the database
+            return await _context.Channel.FindAsync(channelId);
+        }
     }
 }

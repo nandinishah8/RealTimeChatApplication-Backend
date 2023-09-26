@@ -8,6 +8,6 @@ namespace MinimalChatApplication.Interfaces
     {
         Task<Channels> CreateChannelAsync(Channels channel);
         //Task<bool> AddMembersToChannelAsync(int channelId, ChannelMember channelMember);
-        //Task<Channel> GetChannelAsync(int channelId);
+        Task<Channels> GetChannelAsync(int channelId);
     }
 }

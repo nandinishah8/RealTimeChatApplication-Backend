@@ -17,16 +17,24 @@
 
         public async Task<Channels> CreateChannelAsync(Channels channel)
         {
-            // Your implementation to create the channel using _channelRepository
-            // Example:
+            
             var createdChannel = await _channelsRepository.CreateChannelAsync(channel);
             return createdChannel;
         }
 
-        //public Channel GetChannel(int id)
-        //{
-        //    return _channelsRepository.GetChannel(id);
-        //}
+
+        public async Task<Channels> GetChannelAsync(int channelId)
+        {
+
+            var channel = await _channelsRepository.GetChannelAsync(channelId);
+
+            if (channel == null)
+            {
+                throw new InvalidOperationException("Channel not found.");
+            }
+
+            return channel;
+        }
 
         //public void AddMembersToChannel(List<ChannelMember> members)
         //{
