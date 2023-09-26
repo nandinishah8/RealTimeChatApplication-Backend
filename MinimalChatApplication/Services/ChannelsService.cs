@@ -36,10 +36,22 @@
             return channel;
         }
 
-        //public void AddMembersToChannel(List<ChannelMember> members)
-        //{
-        //    // Add any additional business logic here
-        //    _channelsRepository.AddMembersToChannel(members);
-        //}
+        public async Task<bool> AddMembersToChannelAsync(int channelId, List<string> memberIds)
+        {
+            try
+            {
+                // Convert memberIds to ChannelMember objects
+                var membersToAdd = memberIds.Select(memberId => new ChannelMember { UserId = memberId, ChannelId = channelId }).ToList();
+
+                // Call the repository method
+                return await _channelsRepository.AddMembersToChannelAsync(channelId, membersToAdd);
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions and log errors
+                throw new Exception("Failed to add members to the channel.", ex);
+            }
+        }
+
     }
 }
