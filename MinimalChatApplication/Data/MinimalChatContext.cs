@@ -49,7 +49,7 @@ namespace MinimalChatApplication.Data
         public DbSet<Message> Messages { get; set; }
         public DbSet<Logs> Log { get; set; }
 
-        public DbSet<Channels> Channels { get; set; }
+        public DbSet<Channels> Channel { get; set; }
 
         public DbSet<ChannelMember> ChannelMembers { get; set; }
 
