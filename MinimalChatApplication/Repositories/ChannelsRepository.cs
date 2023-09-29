@@ -41,8 +41,7 @@ namespace MinimalChatApplication.Repositories
         //}
         public async Task<List<Channels>> GetChannelsByUserAsync(string userId)
         {
-            // Implement the logic to fetch channels where the specified user is a member
-            // Example: Use Entity Framework Core to query the database
+            
 
             var channels = await _context.ChannelMembers
                 .Where(cm => cm.UserId == userId)
