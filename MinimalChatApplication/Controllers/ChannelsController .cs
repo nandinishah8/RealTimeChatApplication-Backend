@@ -48,8 +48,7 @@ namespace MinimalChatApplication.Controllers
         {
             try
             {
-                var channels = _channelService.GetChannels(); // Implement the GetChannels method in your IChannelService
-
+                var channels = _channelService.GetChannels(); 
                 return Ok(channels);
             }
             catch (Exception ex)
