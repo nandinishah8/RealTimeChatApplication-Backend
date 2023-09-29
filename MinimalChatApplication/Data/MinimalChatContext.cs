@@ -12,7 +12,7 @@ namespace MinimalChatApplication.Data
         {
 
         }
-
+          
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
 

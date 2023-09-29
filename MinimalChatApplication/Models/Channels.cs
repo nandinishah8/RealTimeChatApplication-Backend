@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace MinimalChatApplication.Models
 {
@@ -11,7 +12,7 @@ namespace MinimalChatApplication.Models
         public string Description { get; set; }
         public DateTime CreatedAt { get; set; }
 
-        
+        [JsonIgnore]
         public ICollection<ChannelMember> ChannelMembers { get; set; }
     }
 }

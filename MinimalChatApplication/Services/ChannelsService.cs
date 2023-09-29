@@ -3,6 +3,7 @@
     using MinimalChatApplication.Interfaces;
     using MinimalChatApplication.Models;
     using MinimalChatApplication.Repositories;
+    using NuGet.Protocol.Core.Types;
     using System.Collections.Generic;
     using System.Threading.Channels;
 
@@ -23,17 +24,37 @@
         }
 
 
-        public async Task<Channels> GetChannelAsync(int channelId)
+        //public async Task<Channels> GetChannelAsync(int channelId)
+        //{
+
+        //    var channel = await _channelsRepository.GetChannelAsync(channelId);
+
+        //    if (channel == null)
+        //    {
+        //        throw new InvalidOperationException("Channel not found.");
+        //    }
+
+        //    return channel;
+        //}
+        public async Task<List<Channels>> GetChannelsByUserAsync(string userId)
         {
-
-            var channel = await _channelsRepository.GetChannelAsync(channelId);
-
-            if (channel == null)
+            try
             {
-                throw new InvalidOperationException("Channel not found.");
+                // Fetch the channels where the specified user is a member
+                var channels = await _channelsRepository.GetChannelsByUserAsync(userId);
+                return channels;
             }
+            catch (Exception ex)
+            {
+                // Handle exceptions and log errors
+                throw new Exception("Failed to retrieve channels by user from the database.", ex);
+            }
+        }
 
-            return channel;
+
+        public List<Channels> GetChannels()
+        {
+            return _channelsRepository.GetChannels();
         }
 
         public async Task<bool> AddMembersToChannelAsync(int channelId, List<string> memberIds)

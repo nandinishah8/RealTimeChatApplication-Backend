@@ -43,24 +43,55 @@ namespace MinimalChatApplication.Controllers
             }
         }
 
-
-
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetChannel(int id)
+        [HttpGet]
+        public IActionResult GetChannels()
         {
             try
             {
-                var channel = await _channelService.GetChannelAsync(id);
-                if (channel == null)
-                {
-                    return NotFound(new { message = "Channel not found" });
-                }
-                return Ok(channel);
+                var channels = _channelService.GetChannels(); // Implement the GetChannels method in your IChannelService
+
+                return Ok(channels);
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = ex.Message });
+                return StatusCode(500, "An error occurred while fetching channels.");
+            }
+        }
+
+
+
+
+
+        //[HttpGet("{id}")]
+        //    public async Task<IActionResult> GetChannel(int id)
+        //    {
+        //        try
+        //        {
+        //            var channel = await _channelService.GetChannelAsync(id);
+        //            if (channel == null)
+        //            {
+        //                return NotFound(new { message = "Channel not found" });
+        //            }
+        //            return Ok(channel);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            return BadRequest(new { message = ex.Message });
+        //        }
+        //    }
+        [HttpGet("UserId")]
+        public async Task<IActionResult> GetChannelsByUser(string userId)
+        {
+            try
+            {
+                // Fetch the channels where the specified user is a member
+                var channels = await _channelService.GetChannelsByUserAsync(userId);
+
+                return Ok(channels);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while fetching channels." });
             }
         }
 
@@ -84,6 +115,7 @@ namespace MinimalChatApplication.Controllers
 
         [HttpGet("members/{channelId}")]
         public async Task<IActionResult> GetMembersInChannel(int channelId)
+
         {
             try
             {

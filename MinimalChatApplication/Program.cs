@@ -11,6 +11,7 @@ using System.Text;
 using MinimalChatApplication.Hubs;
 using MinimalChatApplication.Models;
 using MinimalChatApplication.Middlewares;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 

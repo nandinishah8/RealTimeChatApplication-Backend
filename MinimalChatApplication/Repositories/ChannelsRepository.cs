@@ -34,10 +34,30 @@ namespace MinimalChatApplication.Repositories
         }
 
 
-        public async Task<Channels> GetChannelAsync(int channelId)
-        {
+        //public async Task<Channels> GetChannelAsync(int channelId)
+        //{
 
-            return await _context.Channel.FindAsync(channelId);
+        //    return await _context.Channel.FindAsync(channelId);
+        //}
+        public async Task<List<Channels>> GetChannelsByUserAsync(string userId)
+        {
+            // Implement the logic to fetch channels where the specified user is a member
+            // Example: Use Entity Framework Core to query the database
+
+            var channels = await _context.ChannelMembers
+                .Where(cm => cm.UserId == userId)
+                .Select(cm => cm.Channel)
+                .ToListAsync();
+
+            return channels;
+        }
+
+
+        public List<Channels> GetChannels()
+        {
+            return _context.Channel
+        .Include(c => c.ChannelMembers) // Load channel members
+        .ToList();
         }
 
         public async Task<List<UserProfile>> GetMembersInChannelAsync(int channelId)
