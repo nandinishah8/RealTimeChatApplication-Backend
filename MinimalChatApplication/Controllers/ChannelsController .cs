@@ -3,6 +3,7 @@ using MinimalChatApplication.Interfaces;
 using MinimalChatApplication.Models;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 
@@ -79,8 +80,12 @@ namespace MinimalChatApplication.Controllers
         //        }
         //    }
         [HttpGet("UserId")]
-        public async Task<IActionResult> GetChannelsByUser(string userId)
+        public async Task<IActionResult> GetChannelsByUser()
         {
+            var currentUser = HttpContext.User;
+            string userId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Console.WriteLine(userId);
+
             try
             {
                 // Fetch the channels where the specified user is a member
