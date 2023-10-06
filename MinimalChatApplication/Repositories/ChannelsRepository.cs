@@ -25,7 +25,34 @@ namespace MinimalChatApplication.Repositories
             return channel;
         }
 
-            public async Task<bool> AddMembersToChannelAsync(int channelId, List<ChannelMember> members)
+        public async Task UpdateChannelAsync(Channels channel)
+        {
+            _context.Entry(channel).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<Channels> GetChannelAsync(int channelId)
+        {
+            // Implement logic to retrieve a channel from the database
+            return await _context.Channel.FindAsync(channelId);
+        }
+
+        public async Task<bool> DeleteChannelAsync(Channels channel)
+        {
+            try
+            {
+                _context.Channel.Remove(channel);
+                await _context.SaveChangesAsync();
+                return true; // Return true if the operation is successful.
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to delete the channel.", ex);
+            }
+        }
+
+
+        public async Task<bool> AddMembersToChannelAsync(int channelId, List<ChannelMember> members)
             {
 
             _context.ChannelMembers.AddRange(members);
