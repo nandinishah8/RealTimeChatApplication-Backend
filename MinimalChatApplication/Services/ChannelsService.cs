@@ -54,18 +54,7 @@
             }
         }
 
-        //public async Task<Channels> GetChannelAsync(int channelId)
-        //{
-
-        //    var channel = await _channelsRepository.GetChannelAsync(channelId);
-
-        //    if (channel == null)
-        //    {
-        //        throw new InvalidOperationException("Channel not found.");
-        //    }
-
-        //    return channel;
-        //}
+       
         public async Task<List<Channels>> GetChannelsByUserAsync(string userId)
         {
             try
