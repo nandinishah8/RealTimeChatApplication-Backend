@@ -21,28 +21,7 @@ namespace MinimalChatApplication.Controllers
         }
 
 
-        //[HttpPost]
-        //public async Task<IActionResult> CreateChannel(CreateChannelRequest channelRequest)
-        //{
-        //    // Validate and create a new channel
-        //    var channel = new Channels
-        //    {
-        //        Name = channelRequest.Name,
-        //        Description = channelRequest.Description,
-        //        CreatedAt = DateTime.Now 
-
-        //    };
-
-        //    try
-        //    {
-        //        var createdChannel = await _channelService.CreateChannelAsync(channel);
-        //        return Ok(createdChannel);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return BadRequest(new { message = ex.Message });
-        //    }
-        //}
+        
 
         [HttpPost]
         public async Task<IActionResult> CreateChannel(CreateChannelRequest channelRequest)

@@ -7,7 +7,7 @@ namespace MinimalChatApplication.Interfaces
 {
     public interface IChannelService
     {
-        //Task<Channels> CreateChannelAsync(Channels channel);
+        
         Task<Channels> CreateChannelAsync(string name, string description, string creatorUserId);
         Task<bool> AddMembersToChannelAsync(int channelId, List<string> memberIds);
        
