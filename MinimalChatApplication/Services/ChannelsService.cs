@@ -49,7 +49,39 @@
             }
         }
 
-     
+        public async Task<Channels> EditChannelAsync(int channelId, CreateChannelRequest editChannelRequest)
+        {
+            try
+            {
+                var channel = await _channelsRepository.GetChannelAsync(channelId);
+
+                if (channel == null)
+                {
+                    throw new Exception("Channel not found.");
+                }
+
+                if (!string.IsNullOrEmpty(editChannelRequest.Name))
+                {
+                    channel.Name = editChannelRequest.Name;
+                }
+
+                if (!string.IsNullOrEmpty(editChannelRequest.Description))
+                {
+                    channel.Description = editChannelRequest.Description;
+                }
+
+                await _channelsRepository.UpdateChannelAsync(channel);
+
+                return channel;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to edit the channel.", ex);
+            }
+        }
+
+
+
         public async Task<List<Channels>> GetChannelsByUserAsync(string userId)
         {
             try
@@ -71,7 +103,30 @@
             return _channelsRepository.GetChannels();
         }
 
-       
+        public async Task<bool> DeleteChannelAsync(int channelId)
+        {
+            try
+            {
+                var channel = await _channelsRepository.GetChannelAsync(channelId);
+
+                if (channel == null)
+                {
+                    throw new Exception("Channel not found.");
+                }
+
+                // You may add additional checks for authorization or ownership before deleting.
+
+                bool deleted = await _channelsRepository.DeleteChannelAsync(channel);
+                return deleted;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to delete the channel.", ex);
+            }
+        }
+
+
+
         public async Task<bool> AddMembersToChannelAsync(int channelId, List<string> memberIds)
         {
             try

@@ -39,8 +39,19 @@ namespace MinimalChatApplication.Controllers
             }
         }
 
-      
-
+        [HttpPut("{channelId}")]
+        public async Task<IActionResult> EditChannel(int channelId, CreateChannelRequest editChannelRequest)
+        {
+            try
+            {
+                var updatedChannel = await _channelService.EditChannelAsync(channelId, editChannelRequest);
+                return Ok(updatedChannel);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
 
         [HttpGet]
         public IActionResult GetChannels()
@@ -55,9 +66,6 @@ namespace MinimalChatApplication.Controllers
                 return StatusCode(500, "An error occurred while fetching channels.");
             }
         }
-
-
-
 
 
         [HttpGet("UserId")]
@@ -79,6 +87,26 @@ namespace MinimalChatApplication.Controllers
                 return StatusCode(500, new { message = "An error occurred while fetching channels." });
             }
         }
+
+        [HttpDelete("{channelId}")]
+        public async Task<IActionResult> DeleteChannel(int channelId)
+        {
+            try
+            {
+                bool deleted = await _channelService.DeleteChannelAsync(channelId);
+                if (deleted)
+                {
+                    return Ok(new { message = "Channel deleted successfully" });
+                }
+                return BadRequest("Failed to delete the channel");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+
 
         [HttpPost("addMembers")]
         public async Task<IActionResult> AddMembersToChannel(AddMembersRequest addMembersRequest)
