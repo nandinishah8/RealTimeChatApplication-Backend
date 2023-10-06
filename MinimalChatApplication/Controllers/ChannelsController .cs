@@ -141,6 +141,25 @@ namespace MinimalChatApplication.Controllers
                 return StatusCode(500, "An error occurred while retrieving members in the channel.");
             }
         }
+
+        [HttpDelete("{channelId}/members")]
+        public async Task<IActionResult> DeleteMembersFromChannel(int channelId, List<string> memberIds)
+        {
+            try
+            {
+                bool deleted = await _channelService.DeleteMembersFromChannelAsync(channelId, memberIds);
+                if (deleted)
+                {
+                    return Ok(new { message = "Members deleted from the channel successfully" });
+                }
+                return BadRequest("Failed to delete members from the channel");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
     }
 }
 

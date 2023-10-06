@@ -11,6 +11,7 @@ namespace MinimalChatApplication.Repositories
     public class ChannelRepository : IChannelRepository
     {
         private readonly MinimalChatContext _context;
+      
 
         public ChannelRepository(MinimalChatContext context)
         {
@@ -102,6 +103,25 @@ namespace MinimalChatApplication.Repositories
             {
                 
                 throw new Exception("Failed to retrieve member profiles in the channel from the database.", ex);
+            }
+        }
+
+        public async Task<bool> DeleteMembersFromChannelAsync(int channelId, List<string> memberIds)
+        {
+            try
+            {
+                var channelMembersToRemove = await _context.ChannelMembers
+                    .Where(cm => cm.ChannelId == channelId && memberIds.Contains(cm.UserId))
+                    .ToListAsync();
+
+                _context.ChannelMembers.RemoveRange(channelMembersToRemove);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to delete members from the channel.", ex);
             }
         }
 

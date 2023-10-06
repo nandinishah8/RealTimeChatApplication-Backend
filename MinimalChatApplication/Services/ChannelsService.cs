@@ -155,5 +155,10 @@
             }
         }
 
+        public Task<bool> DeleteMembersFromChannelAsync(int channelId, List<string> memberIds)
+        {
+            return _channelsRepository.DeleteMembersFromChannelAsync(channelId, memberIds);
+        }
+
     }
 }
