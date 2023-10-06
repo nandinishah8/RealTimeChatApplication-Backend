@@ -21,21 +21,37 @@ namespace MinimalChatApplication.Controllers
         }
 
 
+        //[HttpPost]
+        //public async Task<IActionResult> CreateChannel(CreateChannelRequest channelRequest)
+        //{
+        //    // Validate and create a new channel
+        //    var channel = new Channels
+        //    {
+        //        Name = channelRequest.Name,
+        //        Description = channelRequest.Description,
+        //        CreatedAt = DateTime.Now 
+
+        //    };
+
+        //    try
+        //    {
+        //        var createdChannel = await _channelService.CreateChannelAsync(channel);
+        //        return Ok(createdChannel);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(new { message = ex.Message });
+        //    }
+        //}
+
         [HttpPost]
         public async Task<IActionResult> CreateChannel(CreateChannelRequest channelRequest)
         {
-            // Validate and create a new channel
-            var channel = new Channels
-            {
-                Name = channelRequest.Name,
-                Description = channelRequest.Description,
-                CreatedAt = DateTime.Now 
-                                         
-            };
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
             try
             {
-                var createdChannel = await _channelService.CreateChannelAsync(channel);
+                var createdChannel = await _channelService.CreateChannelAsync(channelRequest.Name, channelRequest.Description, userId);
                 return Ok(createdChannel);
             }
             catch (Exception ex)
@@ -43,6 +59,9 @@ namespace MinimalChatApplication.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+      
+
 
         [HttpGet]
         public IActionResult GetChannels()
