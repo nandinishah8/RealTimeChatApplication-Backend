@@ -62,23 +62,6 @@ namespace MinimalChatApplication.Controllers
 
 
 
-        //[HttpGet("{id}")]
-        //    public async Task<IActionResult> GetChannel(int id)
-        //    {
-        //        try
-        //        {
-        //            var channel = await _channelService.GetChannelAsync(id);
-        //            if (channel == null)
-        //            {
-        //                return NotFound(new { message = "Channel not found" });
-        //            }
-        //            return Ok(channel);
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            return BadRequest(new { message = ex.Message });
-        //        }
-        //    }
         [HttpGet("UserId")]
         public async Task<IActionResult> GetChannelsByUser()
         {
