@@ -25,13 +25,13 @@ namespace MinimalChatApplication.Repositories
             return channel;
         }
 
-        public async Task<bool> AddMembersToChannelAsync(int channelId, List<ChannelMember> members)
-        {
+            public async Task<bool> AddMembersToChannelAsync(int channelId, List<ChannelMember> members)
+            {
 
-            _context.ChannelMembers.AddRange(members);
-            await _context.SaveChangesAsync();
-            return true; // Return true if the operation is successful.
-        }
+                _context.ChannelMembers.AddRange(members);
+                await _context.SaveChangesAsync();
+                return true; // Return true if the operation is successful.
+            }
 
 
         //public async Task<Channels> GetChannelAsync(int channelId)
