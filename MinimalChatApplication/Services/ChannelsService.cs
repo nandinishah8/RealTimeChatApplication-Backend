@@ -16,13 +16,43 @@
             _channelsRepository = channelRepository;
         }
 
-        public async Task<Channels> CreateChannelAsync(Channels channel)
-        {
-            
-            var createdChannel = await _channelsRepository.CreateChannelAsync(channel);
-            return createdChannel;
-        }
+        //public async Task<Channels> CreateChannelAsync(Channels channel)
+        //{
 
+        //    var createdChannel = await _channelsRepository.CreateChannelAsync(channel);
+        //    return createdChannel;
+        //}
+        public async Task<Channels> CreateChannelAsync(string name, string description, string creatorUserId)
+        {
+            if (string.IsNullOrEmpty(name) || string.IsNullOrEmpty(description) || string.IsNullOrEmpty(creatorUserId))
+            {
+                // Perform appropriate validation and error handling for missing or invalid input.
+                throw new ArgumentException("Invalid input data.");
+            }
+
+            var channel = new Channels
+            {
+                Name = name,
+                Description = description,
+                CreatedAt = DateTime.Now
+            };
+
+            try
+            {
+                // Create the channel in the repository
+                var createdChannel = await _channelsRepository.CreateChannelAsync(channel);
+
+                // Add the creator (owner) as a member of the channel
+                await _channelsRepository.AddMembersToChannelAsync(createdChannel.ChannelId, new List<ChannelMember> { new ChannelMember { UserId = creatorUserId, ChannelId = createdChannel.ChannelId } });
+
+                return createdChannel;
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception and perform appropriate error handling.
+                throw new Exception("Failed to create the channel.", ex);
+            }
+        }
 
         //public async Task<Channels> GetChannelAsync(int channelId)
         //{
@@ -57,14 +87,27 @@
             return _channelsRepository.GetChannels();
         }
 
+        //public async Task<bool> AddMembersToChannelAsync(int channelId, List<string> memberIds)
+        //{
+        //    try
+        //    {
+        //        // Convert memberIds to ChannelMember objects
+        //        var membersToAdd = memberIds.Select(memberId => new ChannelMember { UserId = memberId, ChannelId = channelId }).ToList();
+
+        //        // Call the repository method
+        //        return await _channelsRepository.AddMembersToChannelAsync(channelId, membersToAdd);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Handle exceptions and log errors
+        //        throw new Exception("Failed to add members to the channel.", ex);
+        //    }
+        //}
         public async Task<bool> AddMembersToChannelAsync(int channelId, List<string> memberIds)
         {
             try
             {
-                // Convert memberIds to ChannelMember objects
                 var membersToAdd = memberIds.Select(memberId => new ChannelMember { UserId = memberId, ChannelId = channelId }).ToList();
-
-                // Call the repository method
                 return await _channelsRepository.AddMembersToChannelAsync(channelId, membersToAdd);
             }
             catch (Exception ex)
@@ -73,6 +116,7 @@
                 throw new Exception("Failed to add members to the channel.", ex);
             }
         }
+
 
         public async Task<List<UserProfile>> GetMembersInChannelAsync(int channelId)
         {

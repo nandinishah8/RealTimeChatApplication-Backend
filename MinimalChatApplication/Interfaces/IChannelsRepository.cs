@@ -14,6 +14,7 @@ namespace MinimalChatApplication.Interfaces
         Task<List<Channels>> GetChannelsByUserAsync(string userId);
         List<Channels> GetChannels();
         Task<bool> AddMembersToChannelAsync(int channelId, List<ChannelMember> membersToAdd);
+       // Task<bool> AddMemberToChannelAsync(int channelId, string userId);
         Task<List<UserProfile>> GetMembersInChannelAsync(int channelId);
     }
 }
