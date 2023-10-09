@@ -14,6 +14,7 @@ using MinimalChatApplication.Interfaces;
 using MinimalChatApplication.Models;
 using MinimalChatApplication.Services;
 
+
 namespace MinimalChatApplication.Controllers
 {
     [Route("api/[controller]")]
@@ -23,11 +24,13 @@ namespace MinimalChatApplication.Controllers
     {
         private readonly IMessageService _messageService;
         private readonly IHubContext<ChatHub> _hubContext;
+        private readonly IChannelService _channelService;
 
-        public MessagesController(IMessageService messageService, IHubContext<ChatHub> hubContext)
+        public MessagesController(IMessageService messageService, IHubContext<ChatHub> hubContext, IChannelService channelService)
         {
             _messageService = messageService;
             _hubContext = hubContext;
+            _channelService = channelService;
         }
 
         // POST: api/Messages
@@ -93,10 +96,6 @@ namespace MinimalChatApplication.Controllers
             return Ok(response);
         }
 
-
-
-
-
         // PUT: api/Messages/5
 
         [HttpPut("{id}")]
@@ -141,14 +140,38 @@ namespace MinimalChatApplication.Controllers
             }));
         }
 
+        [HttpPost("Channels/messages")]
+        [Authorize] 
+        public async Task<IActionResult> PostChannelMessage(ChannelMessage message)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { message = "Message sending failed due to validation errors." });
+            }
 
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-      
+            var sentMessage = await _messageService.SendMessageToChannel(message, currentUserId);
 
+            // Broadcast the message to all channel members using SignalR
+            var channelMembers = await _channelService.GetMembersInChannelAsync(message.ChannelId);
+            foreach (var member in channelMembers)
+            {
+                // Send the message to each member through SignalR
+                await _hubContext.Clients.User(member.Id).SendAsync("ReceiveChannelMessage", sentMessage);
+            }
 
-      
+            return Ok(sentMessage);
+        }
     }
+
+
+
+
+
+
 }
+
 
 
 

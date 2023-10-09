@@ -5,7 +5,6 @@ using MinimalChatApplication.Interfaces;
 using MinimalChatApplication.Migrations;
 using MinimalChatApplication.Models;
 using System;
-//using NuGet.Protocol.Plugins;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -32,7 +31,7 @@ namespace MinimalChatApplication.Hubs
         }
 
 
-       
+
 
         public override async Task OnConnectedAsync()
         {
@@ -69,7 +68,7 @@ namespace MinimalChatApplication.Hubs
         }
 
 
-     
+
 
         public async Task SendMessage(ConversationResponse message, string senderId)
         {
@@ -81,7 +80,7 @@ namespace MinimalChatApplication.Hubs
 
 
             var connectionId = await _userConnectionManager.GetConnectionIdAsync(message.ReceiverId);
-           
+
             await Clients.All.SendAsync("ReceiveOne", message, senderId, unreadMessageCount);
             //await Clients.Caller.SendAsync("UpdateUnreadCount", unreadMessageCount);
             Console.WriteLine(unreadMessageCount);
@@ -90,14 +89,14 @@ namespace MinimalChatApplication.Hubs
         }
 
 
-      public async Task SendEditedMessage(EditMessage editMessage)
-      {
-           
+        public async Task SendEditedMessage(EditMessage editMessage)
+        {
+
 
             await Clients.All.SendAsync("ReceiveEdited", editMessage);
-                Console.WriteLine(editMessage.Content);
-      
-      }
+            Console.WriteLine(editMessage.Content);
+
+        }
 
 
         public async Task SendDeletedMessage(int messageId)
@@ -106,28 +105,11 @@ namespace MinimalChatApplication.Hubs
         }
 
 
-       
 
-        public async Task MarkAllMessagesAsRead(string receiverId)
+        public async Task SendChannelMessage(ChannelMessage message)
         {
-            
-           // await Clients.All.SendAsync("AllMessagesRead", receiverId);
-            await Clients.User(receiverId).SendAsync("AllMessagesRead");
-        }
-
-        public async Task SendInitialUnreadMessageCount(string userId)
-        {
-            if (unreadMessageCounts.TryGetValue(userId, out var count))
-            {
-                await Clients.User(userId).SendAsync("UpdateUnreadMessageCount", count);
-            }
-        }
-
-        // Method to send the updated unread message count to a user
-        public async Task SendUpdatedUnreadMessageCount(string userId, int count)
-        {
-            unreadMessageCounts[userId] = count;
-            await Clients.User(userId).SendAsync("UpdateUnreadMessageCount", count);
+            var channelId = message.ChannelId.ToString();
+            await Clients.Group(channelId).SendAsync("ReceiveChannelMessage", message);
         }
 
 

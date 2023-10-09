@@ -29,12 +29,19 @@ namespace MinimalChatApplication.Data
                .WithMany()
                .HasForeignKey(m => m.ReceiverId)
                .OnDelete(DeleteBehavior.Restrict);
+
             //configure sender
             modelBuilder.Entity<Message>()
               .HasOne(m => m.Sender)
               .WithMany()
               .HasForeignKey(m => m.SenderId)
               .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Message>()
+               .HasOne(m => m.Channels)
+               .WithMany(c => c.Messages)
+               .HasForeignKey(m => m.ChannelId)
+               .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<IdentityUserLogin<string>>(entity =>
             {
@@ -47,9 +54,7 @@ namespace MinimalChatApplication.Data
         
         public DbSet<Message> Messages { get; set; }
         public DbSet<Logs> Log { get; set; }
-
         public DbSet<Channels> Channel { get; set; }
-
         public DbSet<ChannelMember> ChannelMembers { get; set; }
 
 

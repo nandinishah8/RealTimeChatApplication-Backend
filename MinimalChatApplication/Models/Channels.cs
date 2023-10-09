@@ -14,5 +14,8 @@ namespace MinimalChatApplication.Models
 
         [JsonIgnore]
         public ICollection<ChannelMember> ChannelMembers { get; set; }
+
+        [JsonIgnore]
+        public ICollection<Message> Messages { get; set; }
     }
 }

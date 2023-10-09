@@ -17,15 +17,16 @@ namespace MinimalChatApplication.Services
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IHubContext<ChatHub> _hubContext;
         private readonly Connection _userConnectionManager;
+        private readonly IChannelRepository _channelRepository;
 
 
-        public MessageService(IMessageRepository messageRepository, IHubContext<ChatHub> hubContext, Connection userConnectionManager, IHttpContextAccessor httpContextAccessor)
+        public MessageService(IMessageRepository messageRepository, IHubContext<ChatHub> hubContext, Connection userConnectionManager, IHttpContextAccessor httpContextAccessor, IChannelRepository channelRepository)
         {
             _messageRepository = messageRepository;
             _hubContext = hubContext;
             _httpContextAccessor = httpContextAccessor;
             _userConnectionManager = userConnectionManager;
-
+            _channelRepository = channelRepository;
 
         }
 
@@ -39,7 +40,7 @@ namespace MinimalChatApplication.Services
                 Timestamp = DateTime.UtcNow
             };
 
-            message.Timestamp = DateTime.Now;
+            //message.Timestamp = DateTime.Now;
 
             try
             {
@@ -69,11 +70,11 @@ namespace MinimalChatApplication.Services
                 return new sendMessageResponse();
             }
         }
-        
 
 
 
-      
+
+
         public async Task<List<Message>> GetConversationHistory(ConversationRequest request, string userId)
         {
             return await _messageRepository.GetMessages(userId, request.UserId, request.Count, request.Before);
@@ -165,10 +166,37 @@ namespace MinimalChatApplication.Services
 
         }
 
-        
+        public async Task<Message> SendMessageToChannel(ChannelMessage message, string senderId)
+        {
+            var channel = await _channelRepository.GetChannelAsync(message.ChannelId);
+
+            if (channel == null)
+            {
+                // Handle the case where the channel does not exist
+                return null;
+            }
+
+            var channelMember = await _channelRepository.GetMembersInChannelAsync(message.ChannelId);
+
+            if (channelMember == null)
+            {
+                // Handle the case where the sender is not a member of the channel
+                return null;
+            }
+
+            var newMessage = new Message
+            {
+                SenderId = senderId,
+                ChannelId = message.ChannelId,
+                Content = message.Content,
+                Timestamp = DateTime.Now
+            };
+
+            return await _messageRepository.AddMessageAsync(newMessage);
+        }
 
 
-      
+
 
     }
 }
