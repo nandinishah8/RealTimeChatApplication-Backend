@@ -168,23 +168,7 @@ namespace MinimalChatApplication.Services
         
 
 
-        public void MarkAllMessagesAsRead(string receiverId)
-        {
-            var unreadMessages = _messageRepository.GetUnreadMessages(receiverId);
-
-            foreach (var message in unreadMessages)
-            {
-                _messageRepository.MarkMessageAsRead(message);
-            }
-
-            _messageRepository.SaveChanges(); // Save changes to the database
-        }
-
-        public Dictionary<string, int> GetReadUnreadMessageCounts(string userId)
-        {
-            // Implement the logic to retrieve read/unread message counts
-            return _messageRepository.GetReadUnreadMessageCounts(userId);
-        }
+      
 
     }
 }

@@ -93,65 +93,11 @@ namespace MinimalChatApplication.Repositories
 
 
 
-        //public bool MarkMessagesAsSeen(string currentUserId, string receiverId)
-        //{
-        //    // Fetch all messages between the current user and the receiver ID
-        //    var messages = _dbcontext.Messages
-        //        .Where(m => (m.SenderId == currentUserId && m.ReceiverId == receiverId) ||
-        //                    (m.SenderId == receiverId && m.ReceiverId == currentUserId))
-        //        .ToList();
-
-        //    foreach (var message in messages)
-        //    {
-        //        // Check if the message is not already marked as seen
-        //        if (!message.Seen)
-        //        {
-        //            // Update the message as seen
-        //            message.Seen = true;
-        //            message.SeenTimestamp = DateTime.Now;
-        //            message.SeenByUserId = currentUserId;
-        //        }
-        //    }
-
-        //    // Save changes to the database
-        //    _dbcontext.SaveChanges();
-
-        //    return true;
-        //}
-        public IEnumerable<Message> GetUnreadMessages(string receiverId)
-        {
-            return _dbcontext.Messages
-                .Where(m => m.ReceiverId == receiverId && !m.Seen);
-        }
-
-        public void MarkMessageAsRead(Message message)
-        {
-            message.Seen = true;
-            message.SeenTimestamp = DateTime.Now;
-            _dbcontext.SaveChanges();
+      
+    
 
 
-        }
-
-        public void SaveChanges()
-        {
-            _dbcontext.SaveChanges();
-        }
-
-
-        public Dictionary<string, int> GetReadUnreadMessageCounts(string userId)
-        {
-            var readUnreadCounts = new Dictionary<string, int>();
-
-            // Calculate and retrieve read/unread message counts
-            int unreadCount = _dbcontext.Messages.Count(m => m.ReceiverId == userId && !m.Seen);
-           
-
-            readUnreadCounts.Add("unreadCount", unreadCount);
-           
-
-            return readUnreadCounts;
-        }
+     
 
     }
 }

@@ -12,14 +12,5 @@ namespace MinimalChatApplication.Interfaces
         Task UpdateMessage(int messageId, EditMessage editMessage);
         Task DeleteMessage(Message message);
 
-        
-        IEnumerable<Message> GetUnreadMessages(string receiverId);
-        void MarkMessageAsRead(Message message);
-
-        void SaveChanges();
-
-        
-        Dictionary<string, int> GetReadUnreadMessageCounts(string userId);
-
     }
 }

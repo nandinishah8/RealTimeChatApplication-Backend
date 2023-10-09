@@ -143,41 +143,10 @@ namespace MinimalChatApplication.Controllers
 
 
 
-        [HttpPost("mark-all-as-read/{receiverId}")]
-        public IActionResult MarkAllMessagesAsRead(string receiverId)
-        {
-            try
-            {
-                _messageService.MarkAllMessagesAsRead(receiverId);
-                //return Ok("All messages marked as read.");
-                return Ok(new { message = "All messages marked as read." });
-            }
-            catch (Exception ex)
-            {
-                // Handle exceptions, e.g., log the error and return an error response
-                return StatusCode(500, "An error occurred while marking messages as read.");
-            }
-        }
+      
 
 
-
-        [HttpGet("unread-counts/{userId}")]
-        public IActionResult GetReadUnreadMessageCounts(string userId)
-        {
-            if (string.IsNullOrWhiteSpace(userId))
-            {
-                return BadRequest(new { message = "Invalid user ID." });
-            }
-
-            Dictionary<string, int> readUnreadCounts = _messageService.GetReadUnreadMessageCounts(userId);
-
-            if (readUnreadCounts == null)
-            {
-                return NotFound(new { message = "User not found or counts could not be retrieved." });
-            }
-
-            return Ok(readUnreadCounts);
-        }
+      
     }
 }
 
