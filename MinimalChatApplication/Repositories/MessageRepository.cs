@@ -40,7 +40,7 @@ namespace MinimalChatApplication.Repositories
 
         public async Task<List<Message>> GetMessages(string userId, string otherUserId, int count, DateTime? before)
         {
-           
+
             var sentMessages = _dbcontext.Messages
         .Where(m => m.SenderId == userId && m.ReceiverId == otherUserId);
 
@@ -61,9 +61,9 @@ namespace MinimalChatApplication.Repositories
 
             return messages;
         }
-    
 
-    public async Task<Message> GetMessageByIdAsync(int id)
+
+        public async Task<Message> GetMessageByIdAsync(int id)
         {
             return await _dbcontext.Messages.FindAsync(id);
         }
@@ -91,13 +91,14 @@ namespace MinimalChatApplication.Repositories
 
         }
 
-
-
-      
-    
-
-
-     
+        public async Task<List<Message>> GetChannelMessages(int channelId, int count)
+        {
+            return await _dbcontext.Messages
+                .Where(m => m.ChannelId == channelId)
+                .OrderByDescending(m => m.Timestamp)
+                .Take(count)
+                .ToListAsync();
+        }
 
     }
 }

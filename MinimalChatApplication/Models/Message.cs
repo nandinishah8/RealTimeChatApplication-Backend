@@ -12,8 +12,8 @@ namespace MinimalChatApplication.Models
       
         public string SenderId { get; set; }
        
-        public string ReceiverId { get; set; }
-        public int ChannelId { get; set; }
+        public string? ReceiverId { get; set; }
+        public int? ChannelId { get; set; }
 
         public string Content { get; set; }
         public DateTime Timestamp { get; set; }
@@ -23,6 +23,7 @@ namespace MinimalChatApplication.Models
         // Navigation properties
         public IdentityUser Sender { get; set; }
         public IdentityUser Receiver { get; set; }
+        public Channels Channels { get; set; }
      
     }
 }
