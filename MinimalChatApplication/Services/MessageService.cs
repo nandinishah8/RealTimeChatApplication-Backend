@@ -184,15 +184,28 @@ namespace MinimalChatApplication.Services
                 return null;
             }
 
-            var newMessage = new Message
+
+            Message newMessage = null;
+
+            foreach (var receiver in channelMember)
+            {
+
+                if (senderId != receiver.Id) { 
+             newMessage = new Message
             {
                 SenderId = senderId,
+                ReceiverId=receiver.Id,
                 ChannelId = message.ChannelId,
                 Content = message.Content,
                 Timestamp = DateTime.Now
             };
 
-            return await _messageRepository.AddMessageAsync(newMessage);
+                await _messageRepository.AddMessageAsync(newMessage);
+                
+                }
+            }
+
+            return newMessage;
         }
 
 
