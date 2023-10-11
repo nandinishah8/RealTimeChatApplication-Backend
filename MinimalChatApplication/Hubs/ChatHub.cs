@@ -16,9 +16,6 @@ namespace MinimalChatApplication.Hubs
         private readonly IMessageService _messageService;
         private Dictionary<string, string> userConnectionMap = new Dictionary<string, string>();
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly Dictionary<string, int> unreadMessageCounts = new Dictionary<string, int>();
-
-        int unreadMessageCount = 0;
         public IHubContext<ChatHub> HubContext { get; }
 
         public ChatHub(IMessageService messageService, IHttpContextAccessor httpContextAccessor, IHubContext<ChatHub> hubContext, Connection userConnectionManager)
@@ -76,14 +73,14 @@ namespace MinimalChatApplication.Hubs
             string userId = GetCurrentUserId();
             var receiverId = message.ReceiverId;
             Console.WriteLine($"ReceiverId: {receiverId}");
-            unreadMessageCount++;
+           
 
 
             var connectionId = await _userConnectionManager.GetConnectionIdAsync(message.ReceiverId);
 
-            await Clients.All.SendAsync("ReceiveOne", message, senderId, unreadMessageCount);
-            //await Clients.Caller.SendAsync("UpdateUnreadCount", unreadMessageCount);
-            Console.WriteLine(unreadMessageCount);
+            await Clients.All.SendAsync("ReceiveOne", message, senderId);
+          
+           
 
 
         }
@@ -112,6 +109,14 @@ namespace MinimalChatApplication.Hubs
             await Clients.Group(channelId).SendAsync("ReceiveChannelMessage", message);
         }
 
+        public async Task GetMessages(int channelId)
+        {
+            // Fetch messages from your data store or message service.
+            List<Message> messages = await _messageService.GetChannelMessages(channelId);
+
+            // Send the messages to the calling client.
+            await Clients.Caller.SendAsync("ReceiveMessages", messages);
+        }
 
 
     }

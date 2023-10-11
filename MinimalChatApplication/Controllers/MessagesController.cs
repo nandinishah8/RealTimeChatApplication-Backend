@@ -12,6 +12,7 @@ using MinimalChatApplication.Data;
 using MinimalChatApplication.Hubs;
 using MinimalChatApplication.Interfaces;
 using MinimalChatApplication.Models;
+using MinimalChatApplication.Repositories;
 using MinimalChatApplication.Services;
 
 
@@ -141,7 +142,7 @@ namespace MinimalChatApplication.Controllers
         }
 
         [HttpPost("Channels/messages")]
-        [Authorize] 
+        [Authorize]
         public async Task<IActionResult> PostChannelMessage(ChannelMessage message)
         {
             if (!ModelState.IsValid)
@@ -163,16 +164,47 @@ namespace MinimalChatApplication.Controllers
 
             return Ok(sentMessage);
         }
+
+        [HttpGet("{channelId}/messages")]
+        public async Task<IActionResult> GetChannelMessages(int channelId)
+        {
+            try
+            {
+                var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                // Retrieve the messages for the specified channel
+                var messages = await _messageService.GetChannelMessages(channelId);
+
+                return Ok(messages);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+
+        // DELETE: api/Messages/Channels/{channelId}/{id}
+        [HttpDelete("Channels/{channelId}/{id}")]
+        public async Task<IActionResult> DeleteChannelMessage(int channelId, int id)
+        {
+            // Check if the current user is a member of the channel
+            var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+          
+
+            // Call the repository method to delete the message
+            bool result = await _messageService.DeleteChannelMessage(id, channelId);
+
+            if (result)
+            {
+                // Broadcast the message deletion to all channel members using SignalR
+                var deletedMessage = new { messageId = id, channelId = channelId };
+                await _hubContext.Clients.Group(channelId.ToString()).SendAsync("ReceiveDeletedChannelMessage", deletedMessage);
+                return Ok();
+            }
+
+            return NotFound();
+        }
+
     }
-
-
-
-
-
-
 }
-
-
-
-
 

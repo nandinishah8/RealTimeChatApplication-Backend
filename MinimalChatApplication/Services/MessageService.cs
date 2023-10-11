@@ -187,27 +187,43 @@ namespace MinimalChatApplication.Services
 
             Message newMessage = null;
 
-            foreach (var receiver in channelMember)
-            {
 
-                if (senderId != receiver.Id) { 
-             newMessage = new Message
+
+            newMessage = new Message
             {
                 SenderId = senderId,
-                ReceiverId=receiver.Id,
+
                 ChannelId = message.ChannelId,
                 Content = message.Content,
                 Timestamp = DateTime.Now
             };
 
-                await _messageRepository.AddMessageAsync(newMessage);
-                
-                }
-            }
+            await _messageRepository.AddMessageAsync(newMessage);
+
+
+
 
             return newMessage;
         }
 
+        public async Task<List<Message>> GetChannelMessages(int channelId)
+        {
+
+            return await _messageRepository.GetChannelMessages(channelId);
+        }
+
+        public async Task<bool> DeleteChannelMessage(int messageId, string currentUserId)
+        {
+           
+            var message = await _messageRepository.GetMessageByIdAsync(messageId); 
+            if (message != null && (message.SenderId == currentUserId ))
+            {
+                var channelId = message.ChannelId;
+                return await _messageRepository.DeleteChannelMessage(messageId, channelId);
+            }
+
+            return false;
+        }
 
 
 

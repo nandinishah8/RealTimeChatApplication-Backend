@@ -91,14 +91,37 @@ namespace MinimalChatApplication.Repositories
 
         }
 
-        public async Task<List<Message>> GetChannelMessages(int channelId, int count)
+
+        public async Task<List<Message>> GetChannelMessages(int channelId)
         {
+
             return await _dbcontext.Messages
                 .Where(m => m.ChannelId == channelId)
-                .OrderByDescending(m => m.Timestamp)
-                .Take(count)
+                .OrderBy(m => m.Timestamp)
                 .ToListAsync();
         }
+
+        public async Task<bool> DeleteChannelMessage(int messageId, int channelId)
+        {
+            try
+            {
+                var message = await _dbcontext.Messages.FirstOrDefaultAsync(m => m.Id == messageId && m.ChannelId == channelId);
+                if (message != null)
+                {
+                    _dbcontext.Messages.Remove(message);
+                    await _dbcontext.SaveChangesAsync();
+                    return true;
+                }
+
+                return false;
+            }
+            catch (Exception)
+            {
+                
+                return false;
+            }
+        }
+
 
     }
 }
