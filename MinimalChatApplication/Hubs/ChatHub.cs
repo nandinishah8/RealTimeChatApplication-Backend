@@ -73,14 +73,14 @@ namespace MinimalChatApplication.Hubs
             string userId = GetCurrentUserId();
             var receiverId = message.ReceiverId;
             Console.WriteLine($"ReceiverId: {receiverId}");
-           
+
 
 
             var connectionId = await _userConnectionManager.GetConnectionIdAsync(message.ReceiverId);
 
             await Clients.All.SendAsync("ReceiveOne", message, senderId);
-          
-           
+
+
 
 
         }
@@ -116,6 +116,14 @@ namespace MinimalChatApplication.Hubs
 
             // Send the messages to the calling client.
             await Clients.Caller.SendAsync("ReceiveMessages", messages);
+        }
+
+        public async Task DeleteChannelMessage(int messageId)
+        {
+           
+
+            // Broadcast the deleted message to all channel members except the sender
+            await Clients.GroupExcept("channelGroupName", new List<string> { Context.ConnectionId }).SendAsync("ReceiveDeletedChannelMessage", messageId);
         }
 
 

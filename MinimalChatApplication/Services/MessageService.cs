@@ -214,17 +214,28 @@ namespace MinimalChatApplication.Services
 
         public async Task<bool> DeleteChannelMessage(int messageId, string currentUserId)
         {
-           
-            var message = await _messageRepository.GetMessageByIdAsync(messageId); 
-            if (message != null && (message.SenderId == currentUserId ))
+            
+            var message = await _messageRepository.GetMessageByIdAsync(messageId);
+
+            if (message != null && message.SenderId == currentUserId)
             {
-                var channelId = message.ChannelId;
-                return await _messageRepository.DeleteChannelMessage(messageId, channelId);
+                return await _messageRepository.DeleteMessageAsync(messageId);
             }
 
             return false;
         }
 
+        public async Task<IActionResult> DeleteChannelMessage(int id,int channelId)
+        {
+            var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var message = await _messageRepository.GetChannelMessageByIdAsync(channelId);
+           
+                await _messageRepository.DeleteChannelMessage(message);
+            
+
+
+            return new OkObjectResult(new { message = "Message deleted successfully" });
+        }
 
 
     }
