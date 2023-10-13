@@ -12,6 +12,7 @@ using MinimalChatApplication.Data;
 using MinimalChatApplication.Hubs;
 using MinimalChatApplication.Interfaces;
 using MinimalChatApplication.Models;
+using MinimalChatApplication.Repositories;
 using MinimalChatApplication.Services;
 
 
@@ -141,7 +142,7 @@ namespace MinimalChatApplication.Controllers
         }
 
         [HttpPost("Channels/messages")]
-        [Authorize] 
+       
         public async Task<IActionResult> PostChannelMessage(ChannelMessage message)
         {
             if (!ModelState.IsValid)
@@ -153,26 +154,56 @@ namespace MinimalChatApplication.Controllers
 
             var sentMessage = await _messageService.SendMessageToChannel(message, currentUserId);
 
-            // Broadcast the message to all channel members using SignalR
+            
             var channelMembers = await _channelService.GetMembersInChannelAsync(message.ChannelId);
             foreach (var member in channelMembers)
             {
-                // Send the message to each member through SignalR
+                
                 await _hubContext.Clients.User(member.Id).SendAsync("ReceiveChannelMessage", sentMessage);
             }
 
             return Ok(sentMessage);
         }
+
+        [HttpGet("{channelId}/messages")]
+        public async Task<IActionResult> GetChannelMessages(int channelId)
+        {
+            try
+            {
+                var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+              
+                var messages = await _messageService.GetChannelMessages(channelId);
+
+                return Ok(messages);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error: " + ex.Message);
+            }
+        }
+
+
+        [HttpPut("(channelid)")]
+        public async Task<IActionResult> EditChannelMessage(int id, EditMessage message)
+        {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(new { message = "message editing failed due to validation errors." });
+            }
+
+            return await _messageService.PutChannelMessage(id, message);
+
+        }
+
+
+        [HttpDelete("channelMessage")]
+
+        public async Task<IActionResult> DeleteChannelMessages(int id,int channelId)
+        {
+            return await _messageService.DeleteChannelMessage(id, channelId);
+        }
+
     }
-
-
-
-
-
-
 }
-
-
-
-
 

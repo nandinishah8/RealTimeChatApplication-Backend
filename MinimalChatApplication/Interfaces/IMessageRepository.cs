@@ -12,10 +12,12 @@ namespace MinimalChatApplication.Interfaces
         Task UpdateMessage(int messageId, EditMessage editMessage);
         Task DeleteMessage(Message message);
 
-        Task<List<Message>> GetChannelMessages(int channelId, int count);
-
-        //Task<Message> AddChannelMessageAsync(ChannelMessage message);
-        //Task<List<ChannelMessage>> GetChannelMessages(int channelId, int count, DateTime? before);
+        Task<bool> DeleteMessageAsync(int messageId);
+        
+        Task<List<Message>> GetChannelMessages(int channelId);
+        Task UpdateChannelMessage(int messageId, EditMessage editMessage);
+        Task DeleteChannelMessage(Message message);
+        Task<Message> GetChannelMessageByIdAsync(int channelId);
 
     }
 }

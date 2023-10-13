@@ -40,7 +40,7 @@ namespace MinimalChatApplication.Services
                 Timestamp = DateTime.UtcNow
             };
 
-            //message.Timestamp = DateTime.Now;
+           
 
             try
             {
@@ -82,7 +82,7 @@ namespace MinimalChatApplication.Services
 
         private string GetCurrentUserId()
         {
-            // Retrieve the user ID from the ClaimsPrincipal (User) available in the controller
+            
             var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return userId;
         }
@@ -172,7 +172,7 @@ namespace MinimalChatApplication.Services
 
             if (channel == null)
             {
-                // Handle the case where the channel does not exist
+               
                 return null;
             }
 
@@ -180,35 +180,85 @@ namespace MinimalChatApplication.Services
 
             if (channelMember == null)
             {
-                // Handle the case where the sender is not a member of the channel
+                
                 return null;
             }
 
 
             Message newMessage = null;
 
-            foreach (var receiver in channelMember)
-            {
 
-                if (senderId != receiver.Id) { 
-             newMessage = new Message
+
+            newMessage = new Message
             {
                 SenderId = senderId,
-                ReceiverId=receiver.Id,
+
                 ChannelId = message.ChannelId,
                 Content = message.Content,
                 Timestamp = DateTime.Now
             };
 
-                await _messageRepository.AddMessageAsync(newMessage);
-                
-                }
-            }
+            await _messageRepository.AddMessageAsync(newMessage);
+
+
+
 
             return newMessage;
         }
 
+        public async Task<List<Message>> GetChannelMessages(int channelId)
+        {
 
+            return await _messageRepository.GetChannelMessages(channelId);
+        }
+
+
+        public async Task<IActionResult> PutChannelMessage(int id, EditMessage message)
+        {
+         
+
+            var messages = await _messageRepository.GetMessageByIdAsync(id);
+
+            if (messages == null)
+            {
+                return new NotFoundObjectResult(new { message = "message not found" });
+            }
+
+           
+
+            messages.Content = message.Content;
+            await _messageRepository.UpdateChannelMessage(id, message);
+
+
+           
+
+            return new OkObjectResult(new { message = "Message edited successfully" });
+        }
+
+        public async Task<bool> DeleteChannelMessage(int messageId, string currentUserId)
+        {
+            
+            var message = await _messageRepository.GetMessageByIdAsync(messageId);
+
+            if (message != null && message.SenderId == currentUserId)
+            {
+                return await _messageRepository.DeleteMessageAsync(messageId);
+            }
+
+            return false;
+        }
+
+        public async Task<IActionResult> DeleteChannelMessage(int id,int channelId)
+        {
+            var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var message = await _messageRepository.GetChannelMessageByIdAsync(channelId);
+           
+                await _messageRepository.DeleteChannelMessage(message);
+            
+
+
+            return new OkObjectResult(new { message = "Message deleted successfully" });
+        }
 
 
     }

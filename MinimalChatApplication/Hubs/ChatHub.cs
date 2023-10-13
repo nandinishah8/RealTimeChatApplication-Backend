@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MinimalChatApplication.Interfaces;
 using MinimalChatApplication.Migrations;
 using MinimalChatApplication.Models;
+
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -16,9 +17,6 @@ namespace MinimalChatApplication.Hubs
         private readonly IMessageService _messageService;
         private Dictionary<string, string> userConnectionMap = new Dictionary<string, string>();
         private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly Dictionary<string, int> unreadMessageCounts = new Dictionary<string, int>();
-
-        int unreadMessageCount = 0;
         public IHubContext<ChatHub> HubContext { get; }
 
         public ChatHub(IMessageService messageService, IHttpContextAccessor httpContextAccessor, IHubContext<ChatHub> hubContext, Connection userConnectionManager)
@@ -76,14 +74,14 @@ namespace MinimalChatApplication.Hubs
             string userId = GetCurrentUserId();
             var receiverId = message.ReceiverId;
             Console.WriteLine($"ReceiverId: {receiverId}");
-            unreadMessageCount++;
+
 
 
             var connectionId = await _userConnectionManager.GetConnectionIdAsync(message.ReceiverId);
 
-            await Clients.All.SendAsync("ReceiveOne", message, senderId, unreadMessageCount);
-            //await Clients.Caller.SendAsync("UpdateUnreadCount", unreadMessageCount);
-            Console.WriteLine(unreadMessageCount);
+            await Clients.All.SendAsync("ReceiveOne", message, senderId);
+
+
 
 
         }
@@ -108,10 +106,35 @@ namespace MinimalChatApplication.Hubs
 
         public async Task SendChannelMessage(ChannelMessage message)
         {
+            await Clients.All.SendAsync("ReceiveChannelMessage", message);
             var channelId = message.ChannelId.ToString();
             await Clients.Group(channelId).SendAsync("ReceiveChannelMessage", message);
         }
 
+        public async Task GetMessages(int channelId)
+        {
+           
+            List<Message> messages = await _messageService.GetChannelMessages(channelId);
+
+          
+            await Clients.Caller.SendAsync("ReceiveMessages", messages);
+        }
+
+
+        public async Task EditChannelMessage(EditMessage editMessage)
+        {
+
+
+            await Clients.All.SendAsync("ReceiveChannelEdited", editMessage);
+            Console.WriteLine(editMessage.Content);
+
+        }
+        public async Task DeleteChannelMessage(int messageId)
+        {
+          
+            await Clients.All.SendAsync("ReceiveDeletedChannelMessage", messageId);
+            await Clients.Group("channel").SendAsync("ReceiveDeletedChannelMessage", messageId);
+        }
 
 
     }
