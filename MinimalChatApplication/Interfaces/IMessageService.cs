@@ -19,6 +19,7 @@ namespace MinimalChatApplication.Interfaces
         Task<Message> SendMessageToChannel(ChannelMessage message, string senderId);
 
         Task<List<Message>> GetChannelMessages(int channelId);
+        Task<IActionResult> PutChannelMessage(int id, EditMessage message);
 
         Task<bool> DeleteChannelMessage(int messageId, string currentUserId);
         Task<IActionResult> DeleteChannelMessage(int id, int channelId);

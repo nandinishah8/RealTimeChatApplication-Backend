@@ -154,11 +154,11 @@ namespace MinimalChatApplication.Controllers
 
             var sentMessage = await _messageService.SendMessageToChannel(message, currentUserId);
 
-            // Broadcast the message to all channel members using SignalR
+            
             var channelMembers = await _channelService.GetMembersInChannelAsync(message.ChannelId);
             foreach (var member in channelMembers)
             {
-                // Send the message to each member through SignalR
+                
                 await _hubContext.Clients.User(member.Id).SendAsync("ReceiveChannelMessage", sentMessage);
             }
 
@@ -172,7 +172,7 @@ namespace MinimalChatApplication.Controllers
             {
                 var currentUserId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-                // Retrieve the messages for the specified channel
+              
                 var messages = await _messageService.GetChannelMessages(channelId);
 
                 return Ok(messages);
@@ -182,6 +182,21 @@ namespace MinimalChatApplication.Controllers
                 return StatusCode(500, "Internal server error: " + ex.Message);
             }
         }
+
+
+        [HttpPut("(channelid)")]
+        public async Task<IActionResult> EditChannelMessage(int id, EditMessage message)
+        {
+            if (!ModelState.IsValid)
+            {
+                return new BadRequestObjectResult(new { message = "message editing failed due to validation errors." });
+            }
+
+            return await _messageService.PutChannelMessage(id, message);
+
+        }
+
+
         [HttpDelete("channelMessage")]
 
         public async Task<IActionResult> DeleteChannelMessages(int id,int channelId)

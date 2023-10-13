@@ -13,9 +13,9 @@ namespace MinimalChatApplication.Interfaces
         Task DeleteMessage(Message message);
 
         Task<bool> DeleteMessageAsync(int messageId);
-        //Task<bool> DeleteChannelMessage(int messageId, int? channelId);
+        
         Task<List<Message>> GetChannelMessages(int channelId);
-
+        Task UpdateChannelMessage(int messageId, EditMessage editMessage);
         Task DeleteChannelMessage(Message message);
         Task<Message> GetChannelMessageByIdAsync(int channelId);
 

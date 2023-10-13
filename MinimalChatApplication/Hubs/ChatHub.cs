@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MinimalChatApplication.Interfaces;
 using MinimalChatApplication.Migrations;
 using MinimalChatApplication.Models;
+
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -105,25 +106,34 @@ namespace MinimalChatApplication.Hubs
 
         public async Task SendChannelMessage(ChannelMessage message)
         {
+            await Clients.All.SendAsync("ReceiveChannelMessage", message);
             var channelId = message.ChannelId.ToString();
             await Clients.Group(channelId).SendAsync("ReceiveChannelMessage", message);
         }
 
         public async Task GetMessages(int channelId)
         {
-            // Fetch messages from your data store or message service.
+           
             List<Message> messages = await _messageService.GetChannelMessages(channelId);
 
-            // Send the messages to the calling client.
+          
             await Clients.Caller.SendAsync("ReceiveMessages", messages);
         }
 
+
+        public async Task EditChannelMessage(EditMessage editMessage)
+        {
+
+
+            await Clients.All.SendAsync("ReceiveChannelEdited", editMessage);
+            Console.WriteLine(editMessage.Content);
+
+        }
         public async Task DeleteChannelMessage(int messageId)
         {
-           
-
-            // Broadcast the deleted message to all channel members except the sender
-            await Clients.GroupExcept("channelGroupName", new List<string> { Context.ConnectionId }).SendAsync("ReceiveDeletedChannelMessage", messageId);
+          
+            await Clients.All.SendAsync("ReceiveDeletedChannelMessage", messageId);
+            await Clients.Group("channel").SendAsync("ReceiveDeletedChannelMessage", messageId);
         }
 
 

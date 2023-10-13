@@ -40,7 +40,7 @@ namespace MinimalChatApplication.Services
                 Timestamp = DateTime.UtcNow
             };
 
-            //message.Timestamp = DateTime.Now;
+           
 
             try
             {
@@ -82,7 +82,7 @@ namespace MinimalChatApplication.Services
 
         private string GetCurrentUserId()
         {
-            // Retrieve the user ID from the ClaimsPrincipal (User) available in the controller
+            
             var userId = _httpContextAccessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             return userId;
         }
@@ -172,7 +172,7 @@ namespace MinimalChatApplication.Services
 
             if (channel == null)
             {
-                // Handle the case where the channel does not exist
+               
                 return null;
             }
 
@@ -180,7 +180,7 @@ namespace MinimalChatApplication.Services
 
             if (channelMember == null)
             {
-                // Handle the case where the sender is not a member of the channel
+                
                 return null;
             }
 
@@ -210,6 +210,29 @@ namespace MinimalChatApplication.Services
         {
 
             return await _messageRepository.GetChannelMessages(channelId);
+        }
+
+
+        public async Task<IActionResult> PutChannelMessage(int id, EditMessage message)
+        {
+         
+
+            var messages = await _messageRepository.GetMessageByIdAsync(id);
+
+            if (messages == null)
+            {
+                return new NotFoundObjectResult(new { message = "message not found" });
+            }
+
+           
+
+            messages.Content = message.Content;
+            await _messageRepository.UpdateChannelMessage(id, message);
+
+
+           
+
+            return new OkObjectResult(new { message = "Message edited successfully" });
         }
 
         public async Task<bool> DeleteChannelMessage(int messageId, string currentUserId)

@@ -75,12 +75,12 @@ namespace MinimalChatApplication.Repositories
 
             if (message == null)
             {
-                // Handle the case where the message is not found
+               
                 return;
             }
 
             message.Content = editMessage.Content;
-            // Update other properties as needed
+          
 
             await _dbcontext.SaveChangesAsync();
         }
@@ -101,9 +101,26 @@ namespace MinimalChatApplication.Repositories
                 .ToListAsync();
         }
 
+
+        public async Task UpdateChannelMessage(int messageId, EditMessage editMessage)
+        {
+            var message = await _dbcontext.Messages.FindAsync(messageId);
+
+            if (message == null)
+            {
+                
+                return;
+            }
+
+            message.Content = editMessage.Content;
+           
+
+            await _dbcontext.SaveChangesAsync();
+        }
+
         public async Task<bool> DeleteMessageAsync(int messageId)
         {
-            // Implement the logic to delete a message by its ID
+           
             var message = await GetMessageByIdAsync(messageId);
             if (message != null)
             {
