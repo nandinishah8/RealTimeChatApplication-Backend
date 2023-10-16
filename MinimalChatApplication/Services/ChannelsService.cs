@@ -34,17 +34,17 @@
 
             try
             {
-                // Create the channel in the repository
+                
                 var createdChannel = await _channelsRepository.CreateChannelAsync(channel);
 
-                // Add the creator (owner) as a member of the channel
+               
                 await _channelsRepository.AddMembersToChannelAsync(createdChannel.ChannelId, new List<ChannelMember> { new ChannelMember { UserId = creatorUserId, ChannelId = createdChannel.ChannelId } });
 
                 return createdChannel;
             }
             catch (Exception ex)
             {
-                // Handle the exception and perform appropriate error handling.
+                
                 throw new Exception("Failed to create the channel.", ex);
             }
         }
@@ -86,13 +86,13 @@
         {
             try
             {
-                // Fetch the channels where the specified user is a member
+                
                 var channels = await _channelsRepository.GetChannelsByUserAsync(userId);
                 return channels;
             }
             catch (Exception ex)
             {
-                // Handle exceptions and log errors
+               
                 throw new Exception("Failed to retrieve channels by user from the database.", ex);
             }
         }
@@ -114,7 +114,7 @@
                     throw new Exception("Channel not found.");
                 }
 
-                // You may add additional checks for authorization or ownership before deleting.
+               
 
                 bool deleted = await _channelsRepository.DeleteChannelAsync(channel);
                 return deleted;
@@ -136,7 +136,7 @@
             }
             catch (Exception ex)
             {
-                // Handle exceptions and log errors
+                
                 throw new Exception("Failed to add members to the channel.", ex);
             }
         }

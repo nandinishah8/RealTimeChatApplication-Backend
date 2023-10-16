@@ -23,7 +23,7 @@ namespace MinimalChatApplication.Repositories
         public async Task<Message> AddMessageAsync(Message message)
         {
             _dbcontext.Messages.Add(message);
-            Console.WriteLine(message);
+            
             await _dbcontext.SaveChangesAsync();
             return message;
         }

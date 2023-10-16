@@ -73,7 +73,7 @@ namespace MinimalChatApplication.Controllers
         {
             var currentUser = HttpContext.User;
             string userId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            Console.WriteLine(userId);
+           
 
             try
             {
@@ -94,6 +94,7 @@ namespace MinimalChatApplication.Controllers
             try
             {
                 bool deleted = await _channelService.DeleteChannelAsync(channelId);
+               
                 if (deleted)
                 {
                     return Ok(new { message = "Channel deleted successfully" });
@@ -102,6 +103,8 @@ namespace MinimalChatApplication.Controllers
             }
             catch (Exception ex)
             {
+                // Log the exception details
+               
                 return BadRequest(new { message = ex.Message });
             }
         }
