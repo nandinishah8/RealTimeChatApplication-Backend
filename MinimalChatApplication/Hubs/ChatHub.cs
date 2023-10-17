@@ -36,7 +36,7 @@ namespace MinimalChatApplication.Hubs
 
             var userId = GetCurrentUserId();
             var connectionId = Context.ConnectionId;
-            Console.WriteLine($"CID: {connectionId}, UID: {userId}");
+            
 
             // Associate user ID with connection ID
             if (!string.IsNullOrEmpty(userId) && !string.IsNullOrEmpty(connectionId))
@@ -92,7 +92,7 @@ namespace MinimalChatApplication.Hubs
 
 
             await Clients.All.SendAsync("ReceiveEdited", editMessage);
-            Console.WriteLine(editMessage.Content);
+          
 
         }
 
@@ -126,7 +126,7 @@ namespace MinimalChatApplication.Hubs
 
 
             await Clients.All.SendAsync("ReceiveChannelEdited", editMessage);
-            Console.WriteLine(editMessage.Content);
+            
 
         }
         public async Task DeleteChannelMessage(int messageId)

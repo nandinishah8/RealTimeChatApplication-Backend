@@ -69,11 +69,11 @@ namespace MinimalChatApplication.Controllers
                 return BadRequest(new { message = "Invalid request parameter." });
             }
 
-            Console.WriteLine(request);
+           
             var currentUser = HttpContext.User;
             string userId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            Console.WriteLine(userId);
+            
 
             List<Message> messages = await _messageService.GetConversationHistory(request, userId);
 
