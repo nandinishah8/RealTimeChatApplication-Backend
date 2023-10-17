@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using MinimalChatApplication.Hubs;
 using MinimalChatApplication.Interfaces;
 using MinimalChatApplication.Models;
 using System;
@@ -14,10 +16,13 @@ namespace MinimalChatApplication.Controllers
     public class ChannelsController : ControllerBase
     {
         private readonly IChannelService _channelService;
+        private readonly IHubContext<ChatHub> _chatHubContext;
 
-        public ChannelsController(IChannelService channelService)
+
+        public ChannelsController(IChannelService channelService, IHubContext<ChatHub> chatHubContext)
         {
             _channelService = channelService;
+            _chatHubContext = chatHubContext;
         }
 
 
@@ -31,6 +36,7 @@ namespace MinimalChatApplication.Controllers
             try
             {
                 var createdChannel = await _channelService.CreateChannelAsync(channelRequest.Name, channelRequest.Description, userId);
+             
                 return Ok(createdChannel);
             }
             catch (Exception ex)

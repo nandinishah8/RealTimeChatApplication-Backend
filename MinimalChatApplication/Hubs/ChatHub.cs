@@ -92,7 +92,7 @@ namespace MinimalChatApplication.Hubs
 
 
             await Clients.All.SendAsync("ReceiveEdited", editMessage);
-          
+
 
         }
 
@@ -100,6 +100,19 @@ namespace MinimalChatApplication.Hubs
         public async Task SendDeletedMessage(int messageId)
         {
             await Clients.All.SendAsync("ReceiveDeleted", messageId);
+        }
+
+        public async Task CreateChannel(Channels channel)
+        {
+            var userId = Context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            await Clients.All.SendAsync("ReceiveChannel", channel);
+        }
+
+        public async Task UpdateChannel(Channels updatedChannel)
+        {
+            
+            await Clients.All.SendAsync("ReceiveUpdatedChannel", updatedChannel);
         }
 
 
