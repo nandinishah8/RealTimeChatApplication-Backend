@@ -60,12 +60,12 @@
                     throw new Exception("Channel not found.");
                 }
 
-                if (!string.IsNullOrEmpty(editChannelRequest.Name))
+                if (editChannelRequest.Name != null)
                 {
                     channel.Name = editChannelRequest.Name;
                 }
 
-                if (!string.IsNullOrEmpty(editChannelRequest.Description))
+                if (editChannelRequest.Description != null)
                 {
                     channel.Description = editChannelRequest.Description;
                 }
@@ -79,6 +79,7 @@
                 throw new Exception("Failed to edit the channel.", ex);
             }
         }
+
 
 
 
