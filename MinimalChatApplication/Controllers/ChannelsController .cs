@@ -109,8 +109,6 @@ namespace MinimalChatApplication.Controllers
             }
             catch (Exception ex)
             {
-                // Log the exception details
-               
                 return BadRequest(new { message = ex.Message });
             }
         }
