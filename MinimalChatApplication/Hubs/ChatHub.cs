@@ -117,9 +117,16 @@ namespace MinimalChatApplication.Hubs
 
         public async Task EditChannel(int channelId, Channels updatedChannel)
         {
-            
-            await Clients.All.SendAsync("ReceiveUpdatedChannel",channelId, updatedChannel);
+
+            await Clients.All.SendAsync("ReceiveUpdatedChannel", channelId, updatedChannel);
             await Clients.Group(channelId.ToString()).SendAsync("ReceiveUpdatedChannel", updatedChannel);
+        }
+
+        public async Task DeleteChannel(int channelId)
+        {
+
+            await Clients.All.SendAsync("ReceiveDeletedChannel", channelId);
+            await Clients.Group(channelId.ToString()).SendAsync("ReceiveDeletedChannel", channelId);
         }
 
 
